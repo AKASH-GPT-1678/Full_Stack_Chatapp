@@ -1,10 +1,17 @@
-import {create} from "zustand";
+import { create } from "zustand";
+import { persist } from 'zustand/middleware';
+const useIdStore = create(
+  persist(
 
-const useIdStore = create((set) => ({
-  value: "",
+    (set) => ({
+      value: "",
+      setIdValue: (value) => set({ value }),
 
-  // function to update the value
-  setIdValue: (newId) => set({ value: newId })
-}));
+    }),
+
+    {
+      name: "userId",
+    }
+  ))
 
 export default useIdStore;

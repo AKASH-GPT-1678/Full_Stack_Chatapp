@@ -1,13 +1,39 @@
 import React from 'react';
 import { IoSettingsOutline } from "react-icons/io5";
+import axios from "axios";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import useIdStore from '../zustand';
+import { data } from 'react-router-dom';
 const MainSideDisplay = () => {
     const DivRef = React.useRef(null);
     const [showOptions, setShowOptions] = React.useState(false);
+    const [addChat, setAddChat] = React.useState('');
+    const token = useIdStore((state) => state.value);
+
 
     const handleNewChat = () => {
         setShowOptions(!showOptions);
         DivRef.current.style.display = 'flex';
+    };
+
+
+    const addNewUser = async () => {
+
+        try {
+            const response = await axios.post('http:localhost:3000/api/addcontact', { contactId: addChat.trim() }, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+            console.log(response.data);
+            return response;
+
+
+        } catch (error) {
+            console.log(error);
+
+        }
     }
     return (
         <div className='flex flex-col max-w-[400px] xl:max-w-[500px] p-3 '>
@@ -42,11 +68,11 @@ const MainSideDisplay = () => {
             </div>
             <div className='flex-col items-center justify-center hidden bg-white mt-8 transform duration-300  p-3 rounded-2xl' ref={DivRef}>
                 <p className='font-bold text-2xl'>Search for User</p>
-                <input type="text" className='w-full p-3 border-1 border-gray-400 mt-2  ' placeholder='add username to search' />
+                <input type="text" className='w-full p-3 border-1 border-gray-400 mt-2  ' placeholder='add username to search' onChange={(e) => setAddChat(e.target.value)} />
 
 
 
-                <button className='p-2 w-full bg-blue-500 text-white mt-2 cursor-pointer'>New Chat</button>
+                <button className={`p-2 w-full bg-blue-500 text-white mt-2 cursor-pointer `} onClick={addNewUser}>New Chat</button>
 
 
             </div>
@@ -54,4 +80,4 @@ const MainSideDisplay = () => {
     )
 }
 
-export default MainSideDisplay
+export default MainSideDisplay;
