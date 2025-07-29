@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import { Server } from "socket.io";
 import http from "http";
 import redisClient from './configs/rediClient.js';
+import router from './routes/router.js';
 import "./configs/mongClient.js";
 import { checkPendingMessages, saveMessage, updateStatus } from "./controllers/mongoActions.js";
 import Message from './models/messageModel.js';
@@ -22,7 +23,8 @@ const io = new Server(server, {
 
 app.use(express.json());
 app.use(cors());
-// app.use(decodeToken);
+app.use(decodeToken);
+app.use("/api", router);
 
 io.on('connection', (socket) => {
     const { userId } = socket.handshake.query;
@@ -56,7 +58,7 @@ io.on('connection', (socket) => {
             });
 
             socket.emit(msg.receiverId, message);
-                await saveMessage(msg.senderId,  msg.receiverId, "success",msg.app);
+            await saveMessage(msg.senderId, msg.receiverId, "success", msg.app);
         }
         else {
             const message = new Message({
@@ -65,7 +67,7 @@ io.on('connection', (socket) => {
                 status: "pending",
                 app: msg.app
             })
-            await saveMessage(msg.senderId,  msg.receiverId, "pending",msg.app);
+            await saveMessage(msg.senderId, msg.receiverId, "pending", msg.app);
 
         }
 
@@ -85,7 +87,7 @@ io.on('connection', (socket) => {
 
         console.log('User disconnected');
         await redisClient.del(socket.userId);
-        console.log("User Disconnected " , socket.userId);
+        console.log("User Disconnected ", socket.userId);
     });
 });
 
