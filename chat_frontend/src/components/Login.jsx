@@ -18,6 +18,7 @@ const loginSchema = z.object({
 
 export default function LoginForm() {
     const [someError, setSomeError] = useState(false);
+    const setIdValue = useIdStore((state) => state.setIdValue);
     const {
         register,
         handleSubmit,
@@ -40,6 +41,7 @@ export default function LoginForm() {
                 }
             });
             console.log(response.data);
+            setIdValue(response.data.token)
             return data;
 
 
