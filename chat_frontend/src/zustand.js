@@ -5,13 +5,13 @@ const useIdStore = create(
 
     (set) => ({
       value: "",
-      setIdValue: (value) => set({ value }),
+      setTokenValue: (value) => set({ value }),
 
     }),
 
     {
       name: "userId",
     }
-  ))
+  ));
 
 export default useIdStore;

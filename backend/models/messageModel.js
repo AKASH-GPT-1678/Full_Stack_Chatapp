@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 const MessageModel = new Schema({
     senderId: { type: String, required: true },
     receiverId: { type: String, required: true },
-
+    content : {type : String, required : true},
     status: {
         type: String,
         enum: ['success', 'pending', 'error'],

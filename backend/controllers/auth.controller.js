@@ -266,10 +266,10 @@ async function acceptRequest(req, res) {
         };
 
         const contact2 = await MyContact.create({
-            userId : userId,
-            contactUserId : request.senderId,
-            username : request.senderName,
-            accepted : true
+            userId: userId,
+            contactUserId: request.senderId,
+            username: request.senderName,
+            accepted: true
         });
         contact2.save();
 
@@ -357,7 +357,7 @@ async function getMyContacts(req, res) {
     }
     const userId = req.user.id;
     try {
-        const contacts = await MyContact.find({ userId: userId });
+        const contacts = await MyContact.find({ userId: userId, accepted: true });
         return res.status(200).json({ contacts: contacts });
     } catch (error) {
         console.log(error);

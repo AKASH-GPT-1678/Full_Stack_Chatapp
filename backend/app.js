@@ -25,72 +25,69 @@ app.use(express.json());
 app.use(cors());
 app.use(decodeToken);
 app.use("/api", router);
-
 io.on('connection', (socket) => {
     const { userId } = socket.handshake.query;
-    console.log(userId);
+    console.log(`User ${userId} connected`);
     socket.userId = userId;
-    console.log('A user connected');
+
+    // JOIN USER TO THEIR OWN ROOM - This is crucial!
+    socket.join(userId);
+
     redisClient.set(userId, "Online");
-    const message = checkPendingMessages(userId);
 
-    if (message) {
-        socket.emit(userId, message);
-        updateStatus(userId)
-    }
-
-
-
-
-
-
+    // Check for pending messages
+    const checkAndSendPending = async () => {
+        const messages = await checkPendingMessages(userId);
+        if (messages && messages.length > 0) {
+            socket.emit(userId, messages);
+            await updateStatus(userId);
+        }
+    };
+    checkAndSendPending();
 
     socket.on('chat-message', async (msg) => {
-        const getStatus = await redisClient.get(msg.receiverId);
+        try {
+            const getStatus = await redisClient.get(msg.receiverId);
+
+            if (getStatus) {
+                // Receiver is online
+                const newMessage = {
+                    senderId: msg.senderId,
+                    receiverId: msg.receiverId,
+                    content: msg.content,
+                    timestamp: new Date()
+                };
+
+                io.to(msg.receiverId).emit(msg.receiverId, newMessage);
+
+                await saveMessage(msg.senderId, msg.receiverId, msg.content, "success", msg.app);
 
 
-        if (getStatus) {
-            const message = new Message({
-                senderId: msg.senderId,
-                receiverId: msg.receiverId,
-                status: "success",
-                app: msg.app
-            });
-
-            socket.emit(msg.receiverId, message);
-            await saveMessage(msg.senderId, msg.receiverId, "success", msg.app);
+                socket.emit('message-sent', { success: true, message: newMessage });
+            } else {
+                
+                await saveMessage(msg.senderId, msg.receiverId, msg.content, "pending", msg.app);
+                socket.emit('message-sent', { success: true, pending: true });
+            }
+        } catch (error) {
+            console.error('Error handling chat message:', error);
+            socket.emit('message-error', { error: 'Failed to send message' });
         }
-        else {
-            const message = new Message({
-                senderId: msg.senderId,
-                receiverId: msg.receiverId,
-                status: "pending",
-                app: msg.app
-            })
-            await saveMessage(msg.senderId, msg.receiverId, "pending", msg.app);
-
-        }
-
-
-        console.log('message: ' + msg);
-
     });
-
 
     socket.on('typing', (data) => {
-        console.log(data);
-
+        // Emit typing indicator to receiver
+        io.to(data.receiverId).emit('user-typing', {
+            senderId: data.senderId,
+            isTyping: data.isTyping
+        });
     });
 
-    // Handle disconnection
     socket.on('disconnect', async () => {
-
-        console.log('User disconnected');
+        console.log(`User ${socket.userId} disconnected`);
         await redisClient.del(socket.userId);
-        console.log("User Disconnected ", socket.userId);
     });
 });
-
 
 
 app.get("/", (req, res) => {
