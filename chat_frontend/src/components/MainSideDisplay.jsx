@@ -84,7 +84,7 @@ const MainSideDisplay = () => {
             return response.data;
         } catch (error) {
             console.error('Error fetching contacts:', error);
-            throw error; // Optional: let caller handle it
+            throw error; 
         }
     }
 

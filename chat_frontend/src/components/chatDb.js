@@ -49,10 +49,10 @@ export async function getMessagesByReceiverId(receiverId) {
       if (cursor) {
         messages.push(cursor.value);
         cursor.continue(); // keep going until end
-        console.log(" i am mesg",messages);
+        console.log(" i am mesg", messages);
       } else {
         resolve(messages); // all messages done
-        console.log("i am db" ,messages);
+        console.log("i am db", messages);
       }
     };
 

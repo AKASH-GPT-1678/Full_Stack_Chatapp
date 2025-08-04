@@ -50,7 +50,7 @@ async function checkPendingMessages(receiverId) {
     });
 
     if (pendingMessages.length === 0) {
-      return null;  // ✅ No pending messages
+      return null;  
     }
 
     return pendingMessages;  // ✅ Return messages if found

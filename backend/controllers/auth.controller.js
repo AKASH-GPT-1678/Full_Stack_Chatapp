@@ -7,11 +7,12 @@ import MessageRequest from "../models/message.request.js";
 
 
 
+
 async function registerUser(req, res) {
     const { fullName, email, username, phone, password, app } = req.body;
 
     // ✅ Check required fields (excluding phone)
-    if (!fullName || !email || !username || !password) {
+    if (!email || !username || !password) {
         return res.status(400).json({
             error: "fullName, email, username, and password are required.",
         });
@@ -38,17 +39,15 @@ async function registerUser(req, res) {
 
 
         const user = await User.create({
-            fullName: fullName,
             email: email,
             username: username,
-            phone: phone,
             password: hashpassword,
             app: app
 
         });
 
 
-        return res.status(201).json({ message: "User registered", user: user });
+        return res.status(201).json({ message: "User registered", success: true, user: user });
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: "Something went wrong", error: error.message });
@@ -56,6 +55,23 @@ async function registerUser(req, res) {
 
 
     }
+
+};
+
+async function deletUser(req, res) {
+    const { email } = req.body
+
+
+    if (!email) {
+        throw new Error("Email Cannot BeEmpty");
+    };
+
+    const user = User.findOne({ email: email });
+    if (!user) {
+        return res.status(404).json({ message: "User Not Found" });
+    }
+    await User.deleteOne({ email: email });
+    return res.status(200).json({ message: "User Deleted", success: true });
 
 }
 
@@ -172,7 +188,7 @@ async function loginUser(req, res) {
         const compare = await bcrypt.compare(password, finduser.password);
         if (compare) {
             const token = generatetoken(payload);
-            res.status(200).json({success : true, message: "Found the User", token: token });
+            res.status(200).json({ success: true, message: "Found the User", token: token });
         } else {
             res.status(401).json({ message: "Invalid credentials" });
         }
@@ -186,17 +202,15 @@ async function loginUser(req, res) {
 };
 
 async function addToContact(req, res) {
-    if (!req.user) {
-        return { verified: false, status: 401, message: "Unauthorized request" };
-    };
+
 
 
 
     try {
-        const userId = req.user.id;
 
-        const { contactId } = req.body;
-        console.log(contactId);
+
+        const { contactId, userId } = req.body;
+        console.log(contactId, userId);
 
         const contact = await User.findOne({ username: contactId });
         console.log(contact);
@@ -235,13 +249,9 @@ async function addToContact(req, res) {
 
 
 async function acceptRequest(req, res) {
-    if (!req.user) {
-        return { verified: false, status: 401, message: "Unauthorized request" };
 
-    };
 
-    const userId = req.user.id;
-    const { requestId } = req.body;
+    const { userId, requestId } = req.body;
 
     try {
         const request = await MessageRequest.findOne({
@@ -288,10 +298,8 @@ async function acceptRequest(req, res) {
 }
 
 async function checkForRequest(req, res) {
-    if (!req.user) {
-        return { verified: false, status: 401, message: "Unauthorized request" };
-    };
-    const userId = req.user.id;
+
+    const { userId } = req.query;
 
     try {
         const request = await MessageRequest.find({
@@ -299,6 +307,7 @@ async function checkForRequest(req, res) {
             accepted: false
 
         });
+        console.log(request);
 
         if (!request) {
             return res.status(200).json({ message: "No Request" })
@@ -351,11 +360,9 @@ async function addNickName(req, res) {
 };
 
 async function getMyContacts(req, res) {
-    if (!req.user) {
-        return { verified: false, status: 401, message: "Unauthorized request" };
 
-    }
-    const userId = req.user.id;
+
+    const { userId } = req.query;
     try {
         const contacts = await MyContact.find({ userId: userId, accepted: true });
         return res.status(200).json({ contacts: contacts });
@@ -367,22 +374,23 @@ async function getMyContacts(req, res) {
 }
 
 
-
-
-async function getMyid(req, res) {
-    if (!req.user) {
-        return { verified: false, status: 401, message: "Unauthorized request" };
-
-    }
-    const id = req.user.id;
+async function loadProfileDetails(req, res) {
+    const { email } = req.query;
 
     try {
-        return res.status(200).json({ id: id });
+
+        const response = await User.findOne({ email: email });
+        return res.status(200).json({ response: response, success: true });
+
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ error: "Something went wrong" });
+        return res.status(500).json({ error: "Something went wrong", error: error });
+
     }
 
 }
 
-export { registerUser, loginUser, checkForRequest, acceptRequest, checktoken, getMyContacts, addToContact, addNickName };
+
+
+
+export { registerUser, loginUser, checkForRequest, acceptRequest, checktoken, getMyContacts, addToContact, addNickName, deletUser, loadProfileDetails };
