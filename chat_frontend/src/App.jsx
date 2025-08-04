@@ -8,6 +8,7 @@ import { Link, Router, Route, Routes } from 'react-router-dom';
 import MainSideDisplay from './components/MainSideDisplay';
 import RegistrationForm from './components/RegistrationForm';
 import LoginForm from './components/Login';
+import Testing from './components/Testing';
 function App() {
   const [count, setCount] = useState(0);
   const [value, setValue] = useState("");
@@ -21,6 +22,7 @@ function App() {
       <Route path="/" element={<MainSideDisplay />} />
       <Route path="/register" element={<RegistrationForm />} />
       <Route path='/login' element={<LoginForm/>} />
+      <Route path="/testing" element={<Testing />} />
     </Routes>
 
 

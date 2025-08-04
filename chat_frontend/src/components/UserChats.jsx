@@ -6,27 +6,33 @@ import { io } from 'socket.io-client';
 import { useState } from 'react';
 import useIdStore from '../zustand';
 import axios from 'axios';
-// interface UserChatsProps {
-//     chatId: string;
-// }
+import { saveMessage } from './chatDb';
+import { getMessagesByReceiverId } from './chatDb';
+
+
+
 
 const UserChats = ({ chatId }) => {
     const [socket, setSocket] = useState(null);
     const [message, setMessage] = useState("");
     const userId = useTempStore((state) => state.tempData);
-    // const token = useIdStore((state) => state.value);
+    const [messages, setMessages] = useState([]);
+
 
 
     useEffect(() => {
 
         const socket = io('http://localhost:3000', {
-            autoConnect: true,
+            autoConnect: false,
             query: {
                 userId: userId.trim()
             }
         });
 
-        setSocket(socket)
+
+        setSocket(socket);
+        socket.connect();
+
 
         socket.on('connect', () => {
             console.log('Connected to server');
@@ -42,6 +48,8 @@ const UserChats = ({ chatId }) => {
         socket.on(userId, (msg) => {
             console.log(' i received a message');
             console.log(msg);
+            setMessages((prevMessages) => [...prevMessages, msg]);
+            saveMessage(msg.senderId, msg.receiverId, msg.content, msg.createdAt);
             console.log("received");
         })
 
@@ -52,7 +60,8 @@ const UserChats = ({ chatId }) => {
         })
 
 
-    }, [chatId, chatId]);
+    }, [chatId]);
+
 
 
     const sendMessage = () => {
@@ -72,6 +81,16 @@ const UserChats = ({ chatId }) => {
 
         )
     }
+
+    const getMyChats = async () => {
+
+        const messages = await getMessagesByReceiverId('688d01f947cdabcff591bcba');
+        console.log(messages);
+    };
+
+    const filteredChats = messages.filter((message) => message.senderId === chatId.trim());
+
+
 
 
     //     try {
@@ -102,6 +121,31 @@ const UserChats = ({ chatId }) => {
         <div className='flex flex-col h-full mb-5 '>
             <h2>Chat ID: {chatId}</h2>
             <p>{userId}</p>
+            <button onClick={() => getMessagesByReceiverId('688d01f947cdabcff591bcba')}>Get Messages</button>
+            <div>
+                {
+                    filteredChats.map((item, index) => (
+                        <div key={index}>
+                            <p>{item.content}</p>
+                        </div>
+                    ))
+                }
+
+                {
+                    messages.map((item, index) => (
+                        <div key={index}>
+                            <p>{item.content}</p>
+                        </div>
+                    ))
+                }
+
+                <p>
+                    {JSON.stringify(messages)}
+                    {JSON.stringify(filteredChats)}
+                </p>
+
+
+            </div>
 
             <div className='mt-auto flex flex-row items-center align-bottom px-5'>
                 <input type='text' placeholder='Send your Message' className='p-3 w-full bg-violet-50 md:min-h-[50px]' onChange={(e) => setMessage(e.target.value)} />

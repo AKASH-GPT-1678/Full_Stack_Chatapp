@@ -172,7 +172,7 @@ async function loginUser(req, res) {
         const compare = await bcrypt.compare(password, finduser.password);
         if (compare) {
             const token = generatetoken(payload);
-            res.status(200).json({ message: "Found the User", token: token });
+            res.status(200).json({success : true, message: "Found the User", token: token });
         } else {
             res.status(401).json({ message: "Invalid credentials" });
         }

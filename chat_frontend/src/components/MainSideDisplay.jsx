@@ -6,10 +6,10 @@ import useIdStore from '../zustand';
 import { ImCross } from "react-icons/im";
 import { useEffect } from 'react';
 import { TiTickOutline } from "react-icons/ti";
-import ChatPage from './ChatPage';
+
 import UserChats from './UserChats';
 import useTempStore from '../userzustand';
-
+import { saveMessage } from './chatDb';
 const MainSideDisplay = () => {
     const DivRef = React.useRef(null);
     const [showOptions, setShowOptions] = React.useState(false);
@@ -139,7 +139,7 @@ const MainSideDisplay = () => {
                                     <p className='font-semibold' onClick={handleNewChat}>New Chat</p>
                                     <p>New Chat</p>
                                     <p className='font-semibold cursor-pointer' onClick={() => setShowRequests(!showRequests)}>View Requests</p>
-                                    <p>New Chat</p>
+                                    <p onClick={()=> window.location.href = '/login'}>Login</p>
 
                                 </div>
 
@@ -219,13 +219,15 @@ const MainSideDisplay = () => {
                     ) : (
 
                         <div className='flex flex-col mt-6'>
-                            <p>No contacts</p>
+                            <p>No contacts Found</p>
                         </div>
                     )
                 }
             </div>
             <div className='w-full border-2 p-4 h-screen'>
-                <UserChats chatId={activeChat} />
+                {
+                    activeChat === "default" ? <p>hello dear</p> : <UserChats chatId={activeChat}/>
+                }
             </div>
         </div>
     )

@@ -16,6 +16,12 @@ const schema = z.object({
     password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
+// interface Message {
+//   content: string;
+//   senderId: string;
+//   receiverId: string;
+//   timestamp: string; // ISO format (e.g., from Date.toISOString())
+// }
 
 export default function RegistrationForm() {
     const [someError, setSomeError] = useState(false);
@@ -48,6 +54,9 @@ export default function RegistrationForm() {
                 }
             });
             console.log(response.data);
+            if(response.data.message == "User registered"){
+                window.location.href = "/login";
+            }
             return data;
 
         } catch (error) {

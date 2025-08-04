@@ -41,7 +41,10 @@ export default function LoginForm() {
                 }
             });
             console.log(response.data);
-            setIdValue(response.data.token)
+            setIdValue(response.data.token);
+            if (response.data.success = true) {
+                window.location.href = "/";
+            }
             return data;
 
 
@@ -93,6 +96,9 @@ export default function LoginForm() {
                 >
                     Login
                 </button>
+
+
+                <p>Don't have an account? <a href="/register" className="text-blue-600 mt-2 hover:underline">Register</a></p>
             </form>
         </div>
     );
