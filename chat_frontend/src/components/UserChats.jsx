@@ -17,6 +17,8 @@ const UserChats = ({ chatId }) => {
     const [message, setMessage] = useState("");
     const userId = useTempStore((state) => state.tempData);
     const [messages, setMessages] = useState([]);
+    const searchParams = new URLSearchParams(window.location.search);
+    const receiverId = searchParams.get('receiverId');
 
 
 
@@ -118,7 +120,7 @@ const UserChats = ({ chatId }) => {
     // }, [chatId]);
 
     return (
-        <div className='flex flex-col h-full mb-5 '>
+        <div className='flex flex-col h-full mb-5 bg-white'>
             <h2>Chat ID: {chatId}</h2>
             <p>{userId}</p>
             <button onClick={() => getMessagesByReceiverId('688d01f947cdabcff591bcba')}>Get Messages</button>

@@ -6,17 +6,19 @@ import useIdStore from '../zustand';
 import { ImCross } from "react-icons/im";
 import { useEffect } from 'react';
 import { TiTickOutline } from "react-icons/ti";
-
+import Avatar from "../assets/image.png";
 import UserChats from './UserChats';
 import useTempStore from '../userzustand';
 import { saveMessage } from './chatDb';
 const MainSideDisplay = () => {
     const DivRef = React.useRef(null);
     const [showOptions, setShowOptions] = React.useState(false);
+    const [activeType, setActiveType] = React.useState("default");
     const [requests, setRequests] = React.useState([]);
     const [showRequests, setShowRequests] = React.useState(false);
     const [myContacts, setMyContacts] = React.useState([]);
     const [activeChat, setactiveChat] = React.useState("default");
+    const [myUserName, setMyUserName] = React.useState('');
     const [addChat, setAddChat] = React.useState('');
     const token = useIdStore((state) => state.value);
     const endpoint = import.meta.env.VITE_BACKEND_ENDPOINT;
@@ -33,7 +35,7 @@ const MainSideDisplay = () => {
     const addNewUser = async () => {
 
         try {
-            const response = await axios.post('http://localhost:3000/api/addcontact', { contactId: addChat.trim() }, {
+            const response = await axios.post('http://localhost:3000/api/addcontactchatter', { contactId: addChat.trim() }, {
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
@@ -49,15 +51,42 @@ const MainSideDisplay = () => {
         }
     };
 
-    const checkForRequests = async () => {
+    const handleChatPage = (id) => {
+        setactiveChat(id);
+        setShowOptions(false);
+        window.location.href = `/chat?receiverId=${id}`
+    };
 
+
+    const loadMyProfile = async () => {
         try {
-            const data = await axios.get('http://localhost:3000/api/checkrequest', {
+            const response = await axios.get('http://localhost:3000/api/myprofile', {
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
                 }
             });
+            console.log("profile", response.data);
+            setMyUserName(response.data.response.username);
+            return response;
+
+
+        } catch (error) {
+            console.log(error);
+
+        }
+    };
+
+    const checkForRequests = async () => {
+
+        try {
+            const data = await axios.get('http://localhost:3000/api/checkrequestchatter', {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+            console.log(data.data);
 
             console.log(data.data.data);
             setRequests(data.data.data);
@@ -72,7 +101,7 @@ const MainSideDisplay = () => {
 
     async function getContacts() {
         try {
-            const response = await axios.get(`${endpoint}/mycontacts`, {
+            const response = await axios.get(`${endpoint}/mycontactschatter`, {
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
@@ -80,11 +109,11 @@ const MainSideDisplay = () => {
             });
             console.log(response.data.contacts);
             setMyContacts(response.data.contacts);
-            setUserId(response.data.contacts[0].userId)
+            // setUserId(response.data.contacts[0].userId)
             return response.data;
         } catch (error) {
             console.error('Error fetching contacts:', error);
-            throw error; 
+            throw error;
         }
     }
 
@@ -94,7 +123,7 @@ const MainSideDisplay = () => {
         }
 
         try {
-            const response = await axios.put('http://localhost:3000/api/acceptrequest', { requestId: requestid }, {
+            const response = await axios.put('http://localhost:3000/api/acceptrequestchatter', { requestId: requestid }, {
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
@@ -114,20 +143,27 @@ const MainSideDisplay = () => {
 
         checkForRequests();
         getContacts();
+        loadMyProfile();
 
-    }, [])
+    }, [token])
 
 
     return (
 
-        <div className='flex flex-row w-full'>
-            <div className='flex flex-col md:min-w-[300px] lg:min-w-[400px] max-w-[400px] xl:min-w-[500px] p-3 '>
+        <div className='flex flex-row w-full bg-gray-200 p-8 gap-8'>
+            <div className='flex flex-col md:min-w-[300px] lg:min-w-[400px] w-full max-w-[500px] xl:min-w-[500px] p-3 bg-white rounded-2xl shadow-2xl'>
 
 
                 <div className='flex flex-row justify-between max-w-[400px] xl:max-w-[500px] items-center'>
                     <div className='p-3 flex flex-row'>
 
-                        <h1 className='outfit-bold text-3xl text-green-400'>ChatterBox</h1>
+                        <img src={Avatar} alt="profileimage" className='h-[70px] w-[70px] rounded-full' />
+
+
+                        <div className='flex flex-col self-center'>
+                            <p className='font-semibold text-2xl'>{myUserName}</p>
+                            <p>Account Info</p>
+                        </div>
                     </div>
                     <div className='flex flex-row gap-3  p- relative'>
                         <IoSettingsOutline size={30} className='cursor-pointer' />
@@ -139,7 +175,7 @@ const MainSideDisplay = () => {
                                     <p className='font-semibold' onClick={handleNewChat}>New Chat</p>
                                     <p>New Chat</p>
                                     <p className='font-semibold cursor-pointer' onClick={() => setShowRequests(!showRequests)}>View Requests</p>
-                                    <p onClick={()=> window.location.href = '/login'}>Login</p>
+                                    <p onClick={() => window.location.href = '/login'}>Login</p>
 
                                 </div>
 
@@ -149,6 +185,34 @@ const MainSideDisplay = () => {
 
 
                     </div>
+                </div>
+                <div className='p-4 bg-gray-200 w-full rounded-3xl flex flex-row items-center min-h-[50px] justify-evenly'>
+
+                    <p
+                        className={`${activeType === "default" ? "px-6 rounded-2xl text-blue-500 bg-white py-2" : ""
+                            } cursor-pointer font-bold text-gray-500 px-4 md:px-8 py-2`}
+                        onClick={() => setActiveType("default")}
+                    >
+                        All
+                    </p>
+
+                    <p
+                        className={`${activeType === "personal" ? "px-6 rounded-2xl text-blue-500 bg-white py-2" : ""
+                            } cursor-pointer font-bold text-gray-500 px-4 md:px-8 py-2`}
+                        onClick={() => setActiveType("personal")}
+                    >
+                        Personal
+                    </p>
+
+                    <p
+                        className={`${activeType === "groups" ? " rounded-2xl text-blue-500 bg-white " : ""
+                            } cursor-pointer font-bold text-gray-500  px-4 md:px-8 py-2`}
+                        onClick={() => setActiveType("groups")}
+                    >
+                        Groups
+                    </p>
+
+
                 </div>
 
                 <div>
@@ -195,24 +259,36 @@ const MainSideDisplay = () => {
 
                     ) : (
                         <div>
-                            <p>No requests</p>
+
                         </div>
 
                     )
                 }
                 {
                     myContacts.length > 0 ? (
-                        <div>
+                        <div className='mt-3'>
                             {myContacts.map((contact, index) => (
-                                <div key={index} className='flex flex-row min-h-[70px] border-2 items-center cursor-pointer p-2 rounded-2xl hover:bg-gray-50' onClick={() => setactiveChat(contact.contactUserId)}>
-                                    <img src='https://res.cloudinary.com/dffepahvl/image/upload/v1753856887/ffssrmilcadfcna4q4kk.avif' alt={contact.username} className='rounded-full object-cover h-[80%] 
-                                 max-w-[60px] border-1'/>
+                                <div key={index} className='flex flex-row min-h-[50px]   items-center cursor-pointer p-2  rounded-2xl hover:bg-gray-50' onClick={() => handleChatPage(contact.contactUserId)}>
+                                    <img src='https://res.cloudinary.com/dffepahvl/image/upload/v1753856887/ffssrmilcadfcna4q4kk.avif' alt={contact.username} className='rounded-full object-cover h-[60px] w-[70px] border border-gray-400' />
 
-                                    <p className='ml-5 font-bold'>
-                                        {contact.username}
-                                    </p>
+                                    <div className='flex flex-col ml-3 w-full'>
+                                        <div className='flex flex-row justify-between'>
+                                            <p className='font-bold self-start'>
+                                                {contact.username}
+                                            </p>
+                                            <p className='font-semibold text-gray-400'>09:25 PM</p>
+                                        </div>
+                                        <p className='mt-2'>
+                                            Hey how are you doing
+                                        </p>
+                                    </div>
+
+
+
                                 </div>
+
                             ))}
+
 
                         </div>
 
@@ -224,9 +300,9 @@ const MainSideDisplay = () => {
                     )
                 }
             </div>
-            <div className='w-full border-2 p-4 h-screen'>
+            <div className='w-full shadow-2xl rounded-2xl p-4 h-screen bg-white hidden md:block'>
                 {
-                    activeChat === "default" ? <p>hello dear</p> : <UserChats chatId={activeChat}/>
+                    activeChat === "default" ? <p>hello dear</p> : <UserChats chatId={activeChat} />
                 }
             </div>
         </div>

@@ -391,6 +391,25 @@ async function loadProfileDetails(req, res) {
 }
 
 
+async function loadMyProfile(req , res) {
+    if(!req.user){
+        return { verified: false, status: 401, message: "Unauthorized request" };
+    };
+
+    const userId = req.user.email;
+
+    try {
+        const response = await User.findOne({ email: userId });
+        
+        return res.status(200).json({ response: response, success: true });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: "Something went wrong", error: error });
+
+    }
+    
+}
 
 
-export { registerUser, loginUser, checkForRequest, acceptRequest, checktoken, getMyContacts, addToContact, addNickName, deletUser, loadProfileDetails };
+export { registerUser, loginUser, checkForRequest, acceptRequest, checktoken, getMyContacts, addToContact, addNickName, deletUser, loadProfileDetails, loadMyProfile };
