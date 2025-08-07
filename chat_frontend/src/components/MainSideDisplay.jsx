@@ -150,7 +150,7 @@ const MainSideDisplay = () => {
 
     return (
 
-        <div className='flex flex-row w-full bg-gray-200 p-8 gap-8'>
+        <div className='flex flex-row w-full bg-gray-200 p-8  gap-8'>
             <div className='flex flex-col md:min-w-[300px] lg:min-w-[400px] w-full max-w-[500px] xl:min-w-[500px] p-3 bg-white rounded-2xl shadow-2xl'>
 
 
@@ -300,11 +300,14 @@ const MainSideDisplay = () => {
                     )
                 }
             </div>
-            <div className='w-full shadow-2xl rounded-2xl p-4 h-screen bg-white hidden md:block'>
-                {
-                    activeChat === "default" ? <p>hello dear</p> : <UserChats chatId={activeChat} />
-                }
-            </div>
+            <div className='w-full'>
+
+         
+       
+              <UserChats chatId={activeChat || "akash"} />
+                 </div>
+               
+           
         </div>
     )
 }
