@@ -53,8 +53,17 @@ const MainSideDisplay = () => {
 
     const handleChatPage = (id) => {
         setactiveChat(id);
-        setShowOptions(false);
-        window.location.href = `/chat?receiverId=${id}`
+        // setShowOptions(false);
+        const width = window.innerWidth;
+        if (width < 500) {
+            window.location.href = `/chat?receiverId=${id}`
+
+        } else {
+
+            return null;
+        }
+
+
     };
 
 
@@ -139,6 +148,9 @@ const MainSideDisplay = () => {
 
     };
 
+    const activeContact = myContacts.filter((contact) => {
+        return contact.contactUserId == activeChat;
+    });
     useEffect(() => {
 
         checkForRequests();
@@ -301,13 +313,13 @@ const MainSideDisplay = () => {
                 }
             </div>
             <div className='w-full'>
+            
 
-         
-       
-              <UserChats chatId={activeChat || "akash"} />
-                 </div>
-               
-           
+
+                <UserChats username={activeContact.length > 0 ? activeContact[0].username : ""} chatId={activeContact.length > 0 ? activeContact[0].contactUserId : "akash"} />
+            </div>
+
+
         </div>
     )
 }
