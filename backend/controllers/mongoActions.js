@@ -52,6 +52,7 @@ async function checkPendingMessages(receiverId) {
     if (pendingMessages.length === 0) {
       return null;  
     }
+    console.log(pendingMessages);
 
     return pendingMessages;  // ✅ Return messages if found
   } catch (err) {

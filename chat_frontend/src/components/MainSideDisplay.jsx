@@ -163,7 +163,7 @@ const MainSideDisplay = () => {
     return (
 
         <div className='flex flex-row w-full bg-gray-200 p-8  gap-8'>
-            <div className='flex flex-col md:min-w-[300px] lg:min-w-[400px] w-full max-w-[500px] xl:min-w-[500px] p-3 bg-white rounded-2xl shadow-2xl'>
+            <div className='flex flex-col w-full min-w-[350px] md:min-w-[400px] md:max-w-[500px] p-3 bg-white rounded-2xl shadow-2xl'>
 
 
                 <div className='flex flex-row justify-between max-w-[400px] xl:max-w-[500px] items-center'>
@@ -316,7 +316,7 @@ const MainSideDisplay = () => {
             
 
 
-                <UserChats username={activeContact.length > 0 ? activeContact[0].username : ""} chatId={activeContact.length > 0 ? activeContact[0].contactUserId : "akash"} />
+                <UserChats username={activeContact.length > 0 ? activeContact[0].username : ""} chatId={activeContact.length > 0 ? activeContact[0].contactUserId : ""} />
             </div>
 
 
