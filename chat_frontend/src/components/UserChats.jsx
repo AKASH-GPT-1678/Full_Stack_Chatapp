@@ -180,7 +180,7 @@ const UserChats = ({ username, chatId, type }) => {
         .flat(Infinity)
         .filter(msg =>
             msg && typeof msg === 'object' && !Array.isArray(msg) &&
-            (msg.senderId === chatId || msg.receiverId === chatId || msg.groupid === chatId)
+            (msg.senderId === chatId || msg.receiverId === chatId || msg.groupId === chatId)
         );
 
 
@@ -224,6 +224,7 @@ const UserChats = ({ username, chatId, type }) => {
                     <div className=' flex-col w-full hidden md:flex h-screen mb-5 rounded-2xl' style={{ backgroundImage: "url('https://res.cloudinary.com/dffepahvl/image/upload/v1754586400/brvblkicc5iuc7pvuwyv.avif')" }}>
                         <div className='flex flex-col h-full'>
                             <p>{type}</p>
+                     
 
                             <div className='min-h-[70px] w-full bg-white rounded-t-2xl flex-shrink-0'>
                                 <div className='p-3 flex flex-row'>

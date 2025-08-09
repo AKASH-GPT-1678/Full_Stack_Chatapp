@@ -1,25 +1,48 @@
 import Message from "../models/messageModel.js";
 
 
-async function saveMessage(senderId, receiverId, content, status, app) {
+async function saveMessage(senderId, receiverId, content, groupId, status, app) {
   if (!senderId || !receiverId || !content || !status || !app) {
     console.log("❌ Required fields missing");
     return null;
   }
 
   try {
-    const newMessage = new Message({
-      senderId,
-      receiverId,
-      content,
-      status,
-      app
-    });
 
-    const message = await newMessage.save(); 
+    if (groupId) {
+      const newMessage = new Message({
+        senderId,
+        receiverId,
+        content,
+        groupId,
+        status,
+        app
+      });
+      const message = await newMessage.save();
 
-    console.log("✅ Message saved:", message);
-    return message;
+      console.log("✅ Message saved:", message);
+
+      return message;
+
+    }
+    else {
+      const newMessage = new Message({
+        senderId,
+        receiverId,
+        content,
+        status,
+        app
+      });
+
+      const message = await newMessage.save();
+
+      console.log("✅ Message saved:", message);
+      return message;
+
+    }
+
+
+
 
   } catch (error) {
     console.log("❌ Error saving message:", error);
@@ -50,11 +73,26 @@ async function checkPendingMessages(receiverId) {
     });
 
     if (pendingMessages.length === 0) {
-      return null;  
+      return null;
     }
-    console.log(pendingMessages);
 
-    return pendingMessages;  // ✅ Return messages if found
+    const messages = pendingMessages.map((item) => ({
+      senderId: item.senderId,
+      receiverId: item.receiverId,
+      content: item.content,
+      groupId: item.groupId,
+      timestamp: item.createdAt
+
+    }
+
+
+    )
+
+
+    )
+    console.log(messages);
+
+    return messages;  // ✅ Return messages if found
   } catch (err) {
     console.error("❌ Error fetching pending messages:", err);
     return null;  // ✅ Return null on error too

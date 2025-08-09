@@ -61,13 +61,13 @@ io.on('connection', (socket) => {
 
                 io.to(msg.receiverId).emit(msg.receiverId, newMessage);
 
-                await saveMessage(msg.senderId, msg.receiverId, msg.content, "success", msg.app);
+                await saveMessage(msg.senderId, msg.receiverId, msg.content, "", "success", msg.app);
 
 
                 socket.emit('message-sent', { success: true, message: newMessage });
             } else {
 
-                await saveMessage(msg.senderId, msg.receiverId, msg.content, "pending", msg.app);
+                await saveMessage(msg.senderId, msg.receiverId, msg.content, "", "pending", msg.app);
                 socket.emit('message-sent', { success: true, pending: true });
             }
         } catch (error) {
@@ -82,6 +82,9 @@ io.on('connection', (socket) => {
 
         }
         const allIds = await getGroupMemberIds(msg.groupId);
+        const filteredMembers = allIds.filter(id => id !== msg.senderId);
+        console.log(filteredMembers);
+
         async function checkandUpdate(memberIds) {
             if (!memberIds) return;
 
@@ -91,7 +94,7 @@ io.on('connection', (socket) => {
                     if (status) {
                         const newMessage = {
                             senderId: msg.senderId,
-                            groupid: msg.groupId,
+                            groupId: msg.groupId,
                             receiverId: memberIds[i],
                             content: msg.content,
                             timestamp: new Date()
@@ -100,7 +103,7 @@ io.on('connection', (socket) => {
 
                         io.to(reciever).emit(reciever, newMessage);
 
-                        await saveMessage(msg.senderId, reciever, msg.content, "success", msg.app);
+                        await saveMessage(msg.senderId, reciever, msg.content, msg.groupId, "success", msg.app);
 
 
                         socket.emit('message-sent', { success: true, message: newMessage });
@@ -108,8 +111,9 @@ io.on('connection', (socket) => {
                     }
                     else {
                         let receiver = memberIds[i];
+                        console.log(" ia m pending" , receiver)
 
-                        await saveMessage(msg.senderId, receiver, msg.content, "pending", msg.app);
+                        await saveMessage(msg.senderId, receiver, msg.content, msg.groupId, "pending", msg.app);
                         socket.emit('message-sent', { success: true, pending: true });
 
                     }
@@ -128,7 +132,7 @@ io.on('connection', (socket) => {
 
         }
 
-        checkandUpdate(allIds);
+        checkandUpdate(filteredMembers);
 
 
     })
