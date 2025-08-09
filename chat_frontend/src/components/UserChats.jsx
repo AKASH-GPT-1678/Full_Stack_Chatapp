@@ -47,7 +47,7 @@ import EmptyChat from './EmpyChat';
 
 
 
-const UserChats = ({ username, chatId }) => {
+const UserChats = ({ username, chatId, type }) => {
     const [socket, setSocket] = useState(null);
     const [message, setMessage] = useState("");
     const [userId, setUserId] = useState("");
@@ -83,78 +83,91 @@ const UserChats = ({ username, chatId }) => {
 
     useEffect(() => {
         loadMyProfile();
-        console.log(userId)
+        console.log(userId);
 
         if (!userId) return;
 
-
-        const socket = io('http://localhost:3000', {
+        const socketInstance = io('http://localhost:3000', {
             autoConnect: false,
-            query: {
-                userId: userId || "akash"
-            }
+            query: { userId: userId || "akash" }
         });
 
+        setSocket(socketInstance);
+        socketInstance.connect();
 
-        setSocket(socket);
-        socket.connect();
-
-
-        socket.on('connect', () => {
+        socketInstance.on('connect', () => {
             console.log('Connected to server');
         });
 
-
-        socket.on('typing', (data) => {
+        socketInstance.on('typing', (data) => {
             console.log(data);
-            alert("Typing")
-
+            alert("Typing");
         });
 
-        socket.on(userId, (msg) => {
-            console.log(' i received a message');
-            console.log(msg);
-
+        socketInstance.on(userId, (msg) => {
+            console.log('I received a message', msg);
             setLatestMessages((prevMessages) => [...prevMessages, msg]);
-            // saveMessage(msg.senderId, msg.receiverId, msg.content, msg.createdAt);
-            console.log("received");
-        })
-
-        socket.on('disconnect', () => {
-            console.log('Disconnected from server');
-
-
         });
 
+        socketInstance.on('disconnect', () => {
+            console.log('Disconnected from server');
+        });
 
-
-
-
-
+        // 🔹 Cleanup when component unmounts or userId changes
+        return () => {
+            console.log("Cleaning up socket...");
+            socketInstance.disconnect();
+        };
 
     }, [userId]);
 
 
-
     const sendMessage = () => {
-        let msg = {
+        if (type.toString() == "group") {
+            let msg = {
 
-            senderId: userId.trim(),
-            receiverId: chatId.trim(),
-            content: message.trim(),
-            app: "chatterbox"
+                senderId: userId.trim(),
+                groupId: chatId.trim(),
+                content: message.trim(),
+                app: "chatterbox"
+
+
+            }
+            socket.emit('group-message',
+                msg
+
+
+
+
+            )
+            setLatestMessages((prevMessages) => [...prevMessages, msg]);
+
 
 
         }
+        else {
+            let msg = {
 
-        socket.emit('chat-message',
-            msg
+                senderId: userId.trim(),
+                receiverId: chatId.trim(),
+                content: message.trim(),
+                app: "chatterbox"
+
+
+            }
+
+            socket.emit('chat-message',
+                msg
 
 
 
 
-        )
-        setLatestMessages((prevMessages) => [...prevMessages, msg]);
+            )
+            setLatestMessages((prevMessages) => [...prevMessages, msg]);
+
+        }
+
+
     }
 
 
@@ -167,7 +180,7 @@ const UserChats = ({ username, chatId }) => {
         .flat(Infinity)
         .filter(msg =>
             msg && typeof msg === 'object' && !Array.isArray(msg) &&
-            (msg.senderId === chatId || msg.receiverId === chatId)
+            (msg.senderId === chatId || msg.receiverId === chatId || msg.groupid === chatId)
         );
 
 
@@ -210,7 +223,8 @@ const UserChats = ({ username, chatId }) => {
 
                     <div className=' flex-col w-full hidden md:flex h-screen mb-5 rounded-2xl' style={{ backgroundImage: "url('https://res.cloudinary.com/dffepahvl/image/upload/v1754586400/brvblkicc5iuc7pvuwyv.avif')" }}>
                         <div className='flex flex-col h-full'>
-                            {/* Header */}
+                            <p>{type}</p>
+
                             <div className='min-h-[70px] w-full bg-white rounded-t-2xl flex-shrink-0'>
                                 <div className='p-3 flex flex-row'>
                                     <img src={Avatar} alt="profileimage" className='h-[70px] w-[70px] rounded-full' />

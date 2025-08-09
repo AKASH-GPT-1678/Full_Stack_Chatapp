@@ -10,6 +10,7 @@ import router from './routes/router.js';
 import "./configs/mongClient.js";
 import { checkPendingMessages, saveMessage, updateStatus } from "./controllers/mongoActions.js";
 import Message from './models/messageModel.js';
+import { getGroupMemberIds } from './controllers/group.controller.js';
 
 dotenv.config();
 
@@ -65,7 +66,7 @@ io.on('connection', (socket) => {
 
                 socket.emit('message-sent', { success: true, message: newMessage });
             } else {
-                
+
                 await saveMessage(msg.senderId, msg.receiverId, msg.content, "pending", msg.app);
                 socket.emit('message-sent', { success: true, pending: true });
             }
@@ -74,6 +75,63 @@ io.on('connection', (socket) => {
             socket.emit('message-error', { error: 'Failed to send message' });
         }
     });
+
+    socket.on('group-message', async (msg) => {
+        if (!msg.groupId) {
+            return;
+
+        }
+        const allIds = await getGroupMemberIds(msg.groupId);
+        async function checkandUpdate(memberIds) {
+            if (!memberIds) return;
+
+            try {
+                for (let i = 0; i < memberIds.length; i++) {
+                    const status = await redisClient.get(memberIds[i]);
+                    if (status) {
+                        const newMessage = {
+                            senderId: msg.senderId,
+                            groupid: msg.groupId,
+                            receiverId: memberIds[i],
+                            content: msg.content,
+                            timestamp: new Date()
+                        };
+                        let reciever = memberIds[i];
+
+                        io.to(reciever).emit(reciever, newMessage);
+
+                        await saveMessage(msg.senderId, reciever, msg.content, "success", msg.app);
+
+
+                        socket.emit('message-sent', { success: true, message: newMessage });
+
+                    }
+                    else {
+                        let receiver = memberIds[i];
+
+                        await saveMessage(msg.senderId, receiver, msg.content, "pending", msg.app);
+                        socket.emit('message-sent', { success: true, pending: true });
+
+                    }
+
+                }
+
+
+            } catch (error) {
+                console.error('Error handling chat message:', error);
+                socket.emit('message-error', { error: 'Failed to send message' });
+
+            }
+
+
+
+
+        }
+
+        checkandUpdate(allIds);
+
+
+    })
 
     socket.on('typing', (data) => {
         // Emit typing indicator to receiver

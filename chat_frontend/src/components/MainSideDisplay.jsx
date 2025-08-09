@@ -10,20 +10,41 @@ import Avatar from "../assets/image.png";
 import UserChats from './UserChats';
 import useTempStore from '../userzustand';
 import { saveMessage } from './chatDb';
+import { IoArrowForwardCircle } from "react-icons/io5";
+
+
 const MainSideDisplay = () => {
     const DivRef = React.useRef(null);
     const [showOptions, setShowOptions] = React.useState(false);
     const [activeType, setActiveType] = React.useState("default");
     const [requests, setRequests] = React.useState([]);
     const [showRequests, setShowRequests] = React.useState(false);
+    const [newGroup, setNewGroup] = React.useState(false);
     const [myContacts, setMyContacts] = React.useState([]);
     const [activeChat, setactiveChat] = React.useState("default");
     const [myUserName, setMyUserName] = React.useState('');
     const [addChat, setAddChat] = React.useState('');
+    const [groups, setGroups] = React.useState([]);
     const token = useIdStore((state) => state.value);
     const endpoint = import.meta.env.VITE_BACKEND_ENDPOINT;
     const setUserId = useTempStore((state) => state.setTempData);
     const tempData = useTempStore((state) => state.tempData);
+    const [items, setItems] = React.useState([]);
+
+
+    function handleCheckboxChange(e, name, id) {
+        if (e.target.checked) {
+
+            setItems(prevItems => [
+                ...prevItems,
+                { name, id }
+            ]);
+        } else {
+
+            setItems(prevItems => prevItems.filter(item => item.id !== id));
+        }
+    };
+
 
 
     const handleNewChat = () => {
@@ -63,6 +84,12 @@ const MainSideDisplay = () => {
             return null;
         }
 
+
+    };
+
+    const handlecreateGroup = (members) => {
+        localStorage.setItem('members', JSON.stringify(members));
+        window.location.href = '/newgroup';
 
     };
 
@@ -147,15 +174,47 @@ const MainSideDisplay = () => {
         }
 
     };
+    const fetchUserGroups = async () => {
 
-    const activeContact = myContacts.filter((contact) => {
-        return contact.contactUserId == activeChat;
-    });
+        const token = useIdStore.getState().value;
+
+        try {
+            const response = await axios.get("http://localhost:3000/api/my-groups", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            console.log("My Groups:", response.data.data);
+            setGroups(response.data.data);
+
+            const filteredData = response.data.data.map(group => ({
+                contactUserId: group._id,          // from original group
+                username: group.groupName,         // from original group
+                accepted: true,                    // dummy
+                createdAt: new Date().toISOString(), // dummy current time
+                userId: "group", // dummy userId
+                __v: 0,                            // dummy
+                _id: "group"
+            }));
+
+            setMyContacts(prev => [...prev, ...filteredData]);
+        } catch (error) {
+            console.error("Error fetching groups:", error.response?.data || error);
+            return [];
+        }
+    };
+
+
+    const activeContact = myContacts.filter(contact => contact.contactUserId === activeChat);
+
+
     useEffect(() => {
 
         checkForRequests();
         getContacts();
         loadMyProfile();
+        fetchUserGroups();
 
     }, [token])
 
@@ -168,6 +227,8 @@ const MainSideDisplay = () => {
 
                 <div className='flex flex-row justify-between max-w-[400px] xl:max-w-[500px] items-center'>
                     <div className='p-3 flex flex-row'>
+
+
 
                         <img src={Avatar} alt="profileimage" className='h-[70px] w-[70px] rounded-full' />
 
@@ -185,7 +246,7 @@ const MainSideDisplay = () => {
                             showOptions ? (
                                 <div className='absolute top-10 right-0 z-40 bg-white p-3 min-w-[150px] lg:min-w-[200px]  border-2 border-gray-400 space-y-4'>
                                     <p className='font-semibold' onClick={handleNewChat}>New Chat</p>
-                                    <p>New Chat</p>
+                                    <p className='font-semibold cursor-pointer' onClick={() => setNewGroup(!newGroup)}>New Group</p>
                                     <p className='font-semibold cursor-pointer' onClick={() => setShowRequests(!showRequests)}>View Requests</p>
                                     <p onClick={() => window.location.href = '/login'}>Login</p>
 
@@ -276,11 +337,12 @@ const MainSideDisplay = () => {
 
                     )
                 }
+
                 {
                     myContacts.length > 0 ? (
-                        <div className='mt-3'>
+                        <div className='mt-3 h-full border-2 relative'>
                             {myContacts.map((contact, index) => (
-                                <div key={index} className='flex flex-row min-h-[50px]   items-center cursor-pointer p-2  rounded-2xl hover:bg-gray-50' onClick={() => handleChatPage(contact.contactUserId)}>
+                                <div key={index} className='flex flex-row min-h-[50px] relative  items-center cursor-pointer p-2  rounded-2xl hover:bg-gray-50' onClick={() => handleChatPage(contact.contactUserId)}>
                                     <img src='https://res.cloudinary.com/dffepahvl/image/upload/v1753856887/ffssrmilcadfcna4q4kk.avif' alt={contact.username} className='rounded-full object-cover h-[60px] w-[70px] border border-gray-400' />
 
                                     <div className='flex flex-col ml-3 w-full'>
@@ -288,7 +350,8 @@ const MainSideDisplay = () => {
                                             <p className='font-bold self-start'>
                                                 {contact.username}
                                             </p>
-                                            <p className='font-semibold text-gray-400'>09:25 PM</p>
+                                            {newGroup ? <input type='checkbox' className='flex flex-col accent-green-600  cursor-pointer self-center-safe p-2 h-[20px] w-[40px]' onChange={(e) => handleCheckboxChange(e, contact.username, contact.contactUserId)} /> : <p className='font-semibold text-gray-400'>09:25 PM</p>}
+
                                         </div>
                                         <p className='mt-2'>
                                             Hey how are you doing
@@ -299,24 +362,68 @@ const MainSideDisplay = () => {
 
                                 </div>
 
+
                             ))}
+                            {
+                                groups.length > 0 && (
+
+                                    groups.map((contact, index) => (
+                                        <div key={index} className='flex flex-row min-h-[50px] relative  items-center cursor-pointer p-2  rounded-2xl hover:bg-gray-50' onClick={() => handleChatPage(contact._id)}>
+                                            <img src='https://res.cloudinary.com/dffepahvl/image/upload/v1753856887/ffssrmilcadfcna4q4kk.avif' alt={contact.username} className='rounded-full object-cover h-[60px] w-[70px] border border-gray-400' />
+
+                                            <div className='flex flex-col ml-3 w-full'>
+                                                <div className='flex flex-row justify-between'>
+                                                    <p className='font-bold self-start'>
+                                                        {contact.groupName
+                                                        }
+                                                    </p>
+                                                    <p className='font-semibold text-gray-400'>09:25 PM</p>
+
+                                                </div>
+                                                <p className='mt-2'>
+                                                    Hey how are you doing
+                                                </p>
+                                            </div>
+
+
+
+                                        </div>
+
+
+                                    ))
+
+
+
+                                )
+                            }
+
+                            <div>
+                                {
+                                    items.length > 0 ? (
+                                        <IoArrowForwardCircle size={50} className='ml-auto cursor-pointer absolute  bottom-12 right-3.5' fill='green ' onClick={() => handlecreateGroup(items)} />
+
+                                    ) : (
+                                        <></>
+
+                                    )
+                                }
+
+                            </div>
 
 
                         </div>
 
-                    ) : (
-
-                        <div className='flex flex-col mt-6'>
-                            <p>No contacts Found</p>
-                        </div>
-                    )
+                    ) : (<></>)
                 }
+
+
+
             </div>
             <div className='w-full'>
-            
 
 
-                <UserChats username={activeContact.length > 0 ? activeContact[0].username : ""} chatId={activeContact.length > 0 ? activeContact[0].contactUserId : ""} />
+
+                <UserChats username={activeContact.length > 0 ? activeContact[0].username : ""} chatId={activeContact.length > 0 ? activeContact[0].contactUserId : ""} type={activeContact.length > 0 ? activeContact[0]._id : ""} />
             </div>
 
 

@@ -1,7 +1,8 @@
 // saveMessage.js
 import mongoose from "mongoose";
 import Message from "../models/messageModel.js";
-
+// import { getGroupMemberIds } from "../controllers/group.controller.js";
+import Group from "../models/group.chat.js";
 // Connect to MongoDB
 async function connectDB() {
   try {
@@ -38,5 +39,37 @@ async function saveMessage() {
   }
 }
 
+
+const getGroupMemberIds = async (groupId) => {
+  await connectDB();
+  try {
+    if(!groupId){
+        throw new Error("Group ID is required");
+    }
+
+    // Find the group and only fetch the members field
+    const group = await Group.findById(groupId).select("members");
+
+    if (!group) {
+      return res.status(404).json({
+        verified: false,
+        status: 404,
+        message: "Group not found",
+      });
+    }
+
+    // Extract only the memberId values as strings
+    const memberIds = group.members.map(m => m.memberId.toString());
+    console.log(memberIds);
+
+    return memberIds;
+
+  } catch (error) {
+    console.error("Error fetching member IDs:", error);
+
+  }
+};
+
+
+getGroupMemberIds("68967cf60f63f6f5de5a7804"); //"68967cf60f63f6f5de5a7805"
 // Run it
-saveMessage();

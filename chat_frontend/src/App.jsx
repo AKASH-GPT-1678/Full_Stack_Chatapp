@@ -10,6 +10,7 @@ import RegistrationForm from './components/RegistrationForm';
 import LoginForm from './components/Login';
 import Testing from './components/Testing';
 import UserChats from './components/UserChats';
+import Newgroup from './components/Newgroup';
 function App() {
   const [count, setCount] = useState(0);
   const [value, setValue] = useState("");
@@ -25,6 +26,7 @@ function App() {
       <Route path='/login' element={<LoginForm />} />
       <Route path="/testing" element={<Testing />} />
       <Route path="/chat" element={<UserChats />} />
+      <Route path="/newgroup" element={<Newgroup />} />
     </Routes>
 
 
