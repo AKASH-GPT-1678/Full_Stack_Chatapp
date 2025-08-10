@@ -7,10 +7,12 @@ import { ImCross } from "react-icons/im";
 import { useEffect } from 'react';
 import { TiTickOutline } from "react-icons/ti";
 import Avatar from "../assets/image.png";
+import { useRef } from 'react';
 import UserChats from './UserChats';
 import useTempStore from '../userzustand';
 import { saveMessage } from './chatDb';
 import { IoArrowForwardCircle } from "react-icons/io5";
+import { set } from 'zod';
 
 
 const MainSideDisplay = () => {
@@ -23,12 +25,14 @@ const MainSideDisplay = () => {
     const [myContacts, setMyContacts] = React.useState([]);
     const [activeChat, setactiveChat] = React.useState("default");
     const [myUserName, setMyUserName] = React.useState('');
+    const [userId, setUserId] = React.useState('');
     const [addChat, setAddChat] = React.useState('');
     const [groups, setGroups] = React.useState([]);
+    
     const token = useIdStore((state) => state.value);
     const endpoint = import.meta.env.VITE_BACKEND_ENDPOINT;
-    const setUserId = useTempStore((state) => state.setTempData);
-    const tempData = useTempStore((state) => state.tempData);
+
+   
     const [items, setItems] = React.useState([]);
 
 
@@ -104,6 +108,7 @@ const MainSideDisplay = () => {
             });
             console.log("profile", response.data);
             setMyUserName(response.data.response.username);
+            setUserId(response.data.response._id)
             return response;
 
 
@@ -192,13 +197,15 @@ const MainSideDisplay = () => {
                 contactUserId: group._id,          // from original group
                 username: group.groupName,         // from original group
                 accepted: true,                    // dummy
-                createdAt: new Date().toISOString(), // dummy current time
+                createdAt:"zyz", // dummy current time
                 userId: "group", // dummy userId
                 __v: 0,                            // dummy
                 _id: "group"
             }));
+            setMyContacts(prevContacts => [...prevContacts, ...filteredData]);
 
-            setMyContacts(prev => [...prev, ...filteredData]);
+
+            
         } catch (error) {
             console.error("Error fetching groups:", error.response?.data || error);
             return [];
@@ -207,7 +214,24 @@ const MainSideDisplay = () => {
 
 
     const activeContact = myContacts.filter(contact => contact.contactUserId === activeChat);
+    const divRef = useRef(null);
 
+    React.useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (
+                divRef.current &&
+                !divRef.current.contains(event.target)
+            ) {
+                setShowOptions(false); // hide the form when clicking outside
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    });
 
     useEffect(() => {
 
@@ -216,7 +240,14 @@ const MainSideDisplay = () => {
         loadMyProfile();
         fetchUserGroups();
 
-    }, [token])
+
+
+      
+
+    }, []);
+
+    const sortedContacts = new Set(myContacts);
+    const contactsArray = Array.from(sortedContacts);
 
 
     return (
@@ -227,13 +258,14 @@ const MainSideDisplay = () => {
 
                 <div className='flex flex-row justify-between max-w-[400px] xl:max-w-[500px] items-center'>
                     <div className='p-3 flex flex-row'>
+               
 
 
 
                         <img src={Avatar} alt="profileimage" className='h-[70px] w-[70px] rounded-full' />
 
 
-                        <div className='flex flex-col self-center'>
+                        <div className='flex flex-col self-center' onClick={()=> window.location.href = `/profile?id=${userId}`}>
                             <p className='font-semibold text-2xl'>{myUserName}</p>
                             <p>Account Info</p>
                         </div>
@@ -244,7 +276,7 @@ const MainSideDisplay = () => {
                         {
 
                             showOptions ? (
-                                <div className='absolute top-10 right-0 z-40 bg-white p-3 min-w-[150px] lg:min-w-[200px]  border-2 border-gray-400 space-y-4'>
+                                <div className='absolute top-10 right-0 z-40 bg-white p-3 min-w-[150px] lg:min-w-[200px]  rounded-xl shadow-2xl  space-y-4' ref={divRef}>
                                     <p className='font-semibold' onClick={handleNewChat}>New Chat</p>
                                     <p className='font-semibold cursor-pointer' onClick={() => setNewGroup(!newGroup)}>New Group</p>
                                     <p className='font-semibold cursor-pointer' onClick={() => setShowRequests(!showRequests)}>View Requests</p>
@@ -259,6 +291,7 @@ const MainSideDisplay = () => {
 
                     </div>
                 </div>
+                <div>
                 <div className='p-4 bg-gray-200 w-full rounded-3xl flex flex-row items-center min-h-[50px] justify-evenly'>
 
                     <p
@@ -339,9 +372,9 @@ const MainSideDisplay = () => {
                 }
 
                 {
-                    myContacts.length > 0 ? (
-                        <div className='mt-3 h-full border-2 relative'>
-                            {myContacts.map((contact, index) => (
+                    contactsArray.length > 0 ? (
+                        <div className='mt-3 h-full relative'>
+                            {contactsArray.map((contact, index) => (
                                 <div key={index} className='flex flex-row min-h-[50px] relative  items-center cursor-pointer p-2  rounded-2xl hover:bg-gray-50' onClick={() => handleChatPage(contact.contactUserId)}>
                                     <img src='https://res.cloudinary.com/dffepahvl/image/upload/v1753856887/ffssrmilcadfcna4q4kk.avif' alt={contact.username} className='rounded-full object-cover h-[60px] w-[70px] border border-gray-400' />
 
@@ -364,38 +397,7 @@ const MainSideDisplay = () => {
 
 
                             ))}
-                            {
-                                groups.length > 0 && (
 
-                                    groups.map((contact, index) => (
-                                        <div key={index} className='flex flex-row min-h-[50px] relative  items-center cursor-pointer p-2  rounded-2xl hover:bg-gray-50' onClick={() => handleChatPage(contact._id)}>
-                                            <img src='https://res.cloudinary.com/dffepahvl/image/upload/v1753856887/ffssrmilcadfcna4q4kk.avif' alt={contact.username} className='rounded-full object-cover h-[60px] w-[70px] border border-gray-400' />
-
-                                            <div className='flex flex-col ml-3 w-full'>
-                                                <div className='flex flex-row justify-between'>
-                                                    <p className='font-bold self-start'>
-                                                        {contact.groupName
-                                                        }
-                                                    </p>
-                                                    <p className='font-semibold text-gray-400'>09:25 PM</p>
-
-                                                </div>
-                                                <p className='mt-2'>
-                                                    Hey how are you doing
-                                                </p>
-                                            </div>
-
-
-
-                                        </div>
-
-
-                                    ))
-
-
-
-                                )
-                            }
 
                             <div>
                                 {
@@ -418,6 +420,7 @@ const MainSideDisplay = () => {
 
 
 
+            </div>
             </div>
             <div className='w-full'>
 

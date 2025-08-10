@@ -11,6 +11,7 @@ import LoginForm from './components/Login';
 import Testing from './components/Testing';
 import UserChats from './components/UserChats';
 import Newgroup from './components/Newgroup';
+import ProfileSettings from './components/Profile';
 function App() {
   const [count, setCount] = useState(0);
   const [value, setValue] = useState("");
@@ -27,6 +28,7 @@ function App() {
       <Route path="/testing" element={<Testing />} />
       <Route path="/chat" element={<UserChats />} />
       <Route path="/newgroup" element={<Newgroup />} />
+      <Route path='/profile' element={<ProfileSettings/>}/>
     </Routes>
 
 
