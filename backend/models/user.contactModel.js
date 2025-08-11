@@ -15,6 +15,7 @@ const contactSchema = new mongoose.Schema({
     nickname: { type: String },
     phone: { type: String },
     email: { type: String },
+    profileUrl : { type: String  , required : false },
     createdAt: { type: Date, default: Date.now },
     accepted: { type: Boolean, default: false },
 });

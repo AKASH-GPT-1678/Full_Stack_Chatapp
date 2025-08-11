@@ -28,32 +28,37 @@ export default function LoginForm() {
     });
     const endpoint = import.meta.env.VITE_BACKEND_ENDPOINT;
 
-    const onSubmit = async (data) => {
-        console.log("Login Data:", data);
-        const loginData = {
-            email: data.email,
-            password: data.password
-        }
-        try {
-            const response = await axios.post(`${endpoint}/login`, loginData, {
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            });
-            console.log(response.data);
-            setIdValue(response.data.token);
-            if (response.data.success = true) {
-                window.location.href = "/";
-            }
-            return data;
 
-
-        } catch (error) {
-            console.log(error);
-            setSomeError(true);
-
-        }
+const onSubmit = async (data) => {
+    console.log("Login Data:", data);
+    const loginData = {
+        email: data.email,
+        password: data.password
     };
+    try {
+        const response = await axios.post(`${endpoint}/login`, loginData, {
+            headers: { "Content-Type": "application/json" }
+        });
+
+        console.log(response.data);
+        
+        // Update Zustand store
+        setIdValue(response.data.token);
+
+        // Only redirect if login was successful
+        if (response.data.success === true) {
+            setTimeout(() => {
+                window.location.href = "/";
+            }, 50);
+        }
+
+        return data;
+
+    } catch (error) {
+        console.error(error);
+        setSomeError(true);
+    }
+};
 
     return (
         <div className="max-w-md mx-auto p-6 bg-white rounded-xl shadow-md mt-10">

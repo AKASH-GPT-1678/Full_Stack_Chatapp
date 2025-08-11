@@ -26,4 +26,5 @@ router.post("/creategroup", createGroup);
 router.get("/my-groups", getUserGroups);
 router.post("/addprofile" , Upload.single("profile") , addProfileImage);
 
+
 export default router;

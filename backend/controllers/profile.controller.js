@@ -7,46 +7,41 @@ import files from 'fs';
 
 async function addProfileImage(req, res) {
     if (!req.user) {
-        return { verified: false, status: 401, message: "Unauthorized request" };
-    };
+        return res.status(401).json({ verified: false, message: "Unauthorized request" });
+    }
 
     const userId = req.user.id;
+    console.log(userId);
 
-    const users = User.findById(userId);
+    const user = await User.findById(userId); // Await added
 
-    if (!users) {
-        return { verified: false, status: 401, message: "Unauthorized request" };
-
-
+    if (!user) {
+        console.log("User not found");
+        return res.status(401).json({ verified: false, message: "Unauthorized request" });
     }
 
     const localFilePath = path.join(pathname, req.file.originalname);
     const bucket = storage.bucket(bucketName);
-    if (req.file) {
 
+    if (req.file) {
         await bucket.upload(localFilePath, {
             destination: req.file.originalname,
             resumable: false,
-
-
         });
 
         const fileUrl = `https://storage.googleapis.com/${bucketName}/${encodeURIComponent(req.file.originalname)}`;
         console.log("File uploaded successfully");
-        users.profileUrl = fileUrl;
-        await users.save();
+
+        user.profileUrl = fileUrl; 
+        await user.save(); // now works
+
+        files.unlinkSync(localFilePath); // delete local file
         return res.status(201).json({ message: "Profile Photo Added", profilePhoto: fileUrl });
-
-
-
-
-
-    };
-
+    }
 
     files.unlinkSync(localFilePath);
-
 }
+
 
 
 export { addProfileImage };

@@ -42,6 +42,7 @@ async function registerUser(req, res) {
             email: email,
             username: username,
             password: hashpassword,
+
             app: app
 
         });
@@ -221,8 +222,10 @@ async function addToContact(req, res) {
         const createContact = await MyContact.create({
             userId: userId,
             contactUserId: contact._id,
-            username: contact.username
+            username: contact.username,
+            profileUrl: contact.profileUrl
         });
+
 
         const user = await User.findOne({
             _id: userId
@@ -274,16 +277,25 @@ async function acceptRequest(req, res) {
         if (!contact) {
             return res.status(404).json({ message: "Contact Not Found" });
         };
+        const sender = await User.findOne({
+            _id: request.senderId
+        });
+
+        if (!sender) {
+            return res.status(404).json({ message: "Sender Not Found" });
+        };
 
         const contact2 = await MyContact.create({
             userId: userId,
             contactUserId: request.senderId,
             username: request.senderName,
-            accepted: true
+            accepted: true,
+            profileUrl: sender.profileUrl
         });
         contact2.save();
 
         contact.accepted = true;
+        contact.profileUrl = sender.profileUrl
         await contact.save();
         request.accepted = true;
         await request.deleteOne();
@@ -375,11 +387,11 @@ async function getMyContacts(req, res) {
 
 
 async function loadProfileDetails(req, res) {
-    const { email } = req.query;
+    const { id } = req.params;
 
     try {
 
-        const response = await User.findOne({ email: email });
+        const response = await User.findOne({ id: id });
         return res.status(200).json({ response: response, success: true });
 
     } catch (error) {
@@ -391,8 +403,8 @@ async function loadProfileDetails(req, res) {
 }
 
 
-async function loadMyProfile(req , res) {
-    if(!req.user){
+async function loadMyProfile(req, res) {
+    if (!req.user) {
         return { verified: false, status: 401, message: "Unauthorized request" };
     };
 
@@ -400,7 +412,7 @@ async function loadMyProfile(req , res) {
 
     try {
         const response = await User.findOne({ email: userId });
-        
+
         return res.status(200).json({ response: response, success: true });
 
     } catch (error) {
@@ -408,7 +420,7 @@ async function loadMyProfile(req , res) {
         return res.status(500).json({ error: "Something went wrong", error: error });
 
     }
-    
+
 }
 
 

@@ -11,6 +11,7 @@ import "./configs/mongClient.js";
 import { checkPendingMessages, saveMessage, updateStatus } from "./controllers/mongoActions.js";
 import Message from './models/messageModel.js';
 import { getGroupMemberIds } from './controllers/group.controller.js';
+import { group } from 'console';
 
 dotenv.config();
 
@@ -54,6 +55,7 @@ io.on('connection', (socket) => {
                 // Receiver is online
                 const newMessage = {
                     senderId: msg.senderId,
+                    groupId : "",
                     receiverId: msg.receiverId,
                     content: msg.content,
                     timestamp: new Date()
@@ -61,13 +63,13 @@ io.on('connection', (socket) => {
 
                 io.to(msg.receiverId).emit(msg.receiverId, newMessage);
 
-                await saveMessage(msg.senderId, msg.receiverId, msg.content, "", "success", msg.app);
+                await saveMessage(msg.senderId, msg.receiverId, msg.content, "na", "success", msg.app);
 
 
                 socket.emit('message-sent', { success: true, message: newMessage });
             } else {
 
-                await saveMessage(msg.senderId, msg.receiverId, msg.content, "", "pending", msg.app);
+                await saveMessage(msg.senderId, msg.receiverId, msg.content, "na", "pending", msg.app);
                 socket.emit('message-sent', { success: true, pending: true });
             }
         } catch (error) {
@@ -111,7 +113,7 @@ io.on('connection', (socket) => {
                     }
                     else {
                         let receiver = memberIds[i];
-                        console.log(" ia m pending" , receiver)
+                        console.log(" ia m pending", receiver)
 
                         await saveMessage(msg.senderId, receiver, msg.content, msg.groupId, "pending", msg.app);
                         socket.emit('message-sent', { success: true, pending: true });

@@ -20,21 +20,21 @@ const storage = multer.diskStorage({
     }
 });
 
-const Upload = multer({ 
+const Upload = multer({
     storage,
     limits: {
-        fileSize: 5 * 1024 * 1024, 
+        fileSize: 5 * 1024 * 1024,
     },
     fileFilter: (req, file, cb) => {
         // Accept images only
-        if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+        if (!file.originalname.match(/\.(jpg|jpeg|png|gif|webp|bmp|tiff|svg)$/i)) {
             return cb(new Error('Only image files are allowed!'), false);
         }
         cb(null, true);
     }
 });
 
- const bucketName = "mangementbkt";
+const bucketName = "mangementbkt";//mangementbkt
 export {
     Upload,
     pathname,

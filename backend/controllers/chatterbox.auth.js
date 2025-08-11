@@ -146,6 +146,11 @@ async function getMyContactsChatter(req, res) {
     const userId = req.user.id
     try {
         const contacts = await MyContact.find({ userId: userId, accepted: true });
+        
+        const contacts2 = contacts.map(contact => ({
+            ...contact,
+            type: "contacts"
+        }));
         return res.status(200).json({ contacts: contacts });
     } catch (error) {
         console.log(error);
