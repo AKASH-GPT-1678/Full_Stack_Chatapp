@@ -113,7 +113,7 @@ const UserChats = ({ username, chatId, type }) => {
             console.log('Disconnected from server');
         });
 
-        // 🔹 Cleanup when component unmounts or userId changes
+   
         return () => {
             console.log("Cleaning up socket...");
             socketInstance.disconnect();
