@@ -14,6 +14,7 @@ import { saveMessage } from './chatDb';
 import { IoArrowForwardCircle } from "react-icons/io5";
 import { set } from 'zod';
 import { da } from 'zod/v4/locales';
+import { use } from 'react';
 
 
 const MainSideDisplay = () => {
@@ -110,7 +111,7 @@ const MainSideDisplay = () => {
             });
             console.log("profile", response.data);
             setMyUserName(response.data.response.username);
-            setUserId(response.data.response._id);
+            setUserId(response.data.response.id);
             setProfileImage(response.data.response.profileUrl);
 
             return response;
@@ -246,9 +247,9 @@ const MainSideDisplay = () => {
     useEffect(() => {
 
         checkForRequests();
-        getContacts();
+        // getContacts();
         loadMyProfile();
-        fetchUserGroups();
+        // fetchUserGroups();
 
 
 
@@ -258,6 +259,7 @@ const MainSideDisplay = () => {
 
     const sortedContacts = new Set(myContacts);
     const contactsArray = Array.from(sortedContacts);
+    const filterRequest =  requests.filter((request) => request.ownerId !== userId);
 
 
     return (
@@ -268,6 +270,7 @@ const MainSideDisplay = () => {
 
                 <div className='flex flex-row justify-between max-w-[400px] xl:max-w-[500px] items-center'>
                     <div className='p-3 flex flex-row'>
+                        
 
 
 
@@ -346,19 +349,19 @@ const MainSideDisplay = () => {
                     </div>
                     {
 
-                        showRequests && requests.length > 0 ? (
+                        showRequests && filterRequest.length > 0 ? (
                             <div className='flex flex-col w-full mt-6'>
-                                {requests.map((request, index) => (
+                                {filterRequest.map((request, index) => (
                                     <div key={index} className='flex flex-row p-2 border-2 gap-2 items-center min-h-[50px]'>
                                         <div className='h-full rounded-full p-4 border-2'>
 
                                         </div>
                                         <div className='flex flex-col gap-2'>
                                             <p>
-                                                {request.senderName}
+                                                {request.owner.username}
                                             </p>
-                                            <p>{request.senderId
-                                            }</p>
+                                            {/* <p>{request.id
+                                            }</p> */}
 
                                         </div>
                                         <div className='flex flex-row items-center ml-6 gap-2'>

@@ -1,17 +1,15 @@
 import User from "../models/user.model.js";
 import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
-import { verifyToken } from "../middlewares/checkToken.js";
+import { PrismaClient } from "@prisma/client";
 import MyContact from "../models/user.contactModel.js";
 import MessageRequest from "../models/message.request.js";
-
-
+import bcrypt from "bcrypt";
+const prisma = new PrismaClient();
 
 
 async function registerUser(req, res) {
     const { fullName, email, username, phone, password, app } = req.body;
 
-    // ✅ Check required fields (excluding phone)
     if (!email || !username || !password) {
         return res.status(400).json({
             error: "fullName, email, username, and password are required.",
@@ -22,14 +20,16 @@ async function registerUser(req, res) {
 
     try {
 
-        const existingUser = await User.findOne({
-            $or: [
-                { email: email },
-                { username: username }
+        const existingUser = await prisma.user.findFirst({
+            where: {
+                email: email,
+                OR: [
+                    { app: app }
+                ]
+            }
 
-            ],
-            $and: [{ app: app }]
-        });
+
+        })
         if (existingUser) {
             return res.status(409).json({ message: "User already exists" });
         }
@@ -38,12 +38,18 @@ async function registerUser(req, res) {
         const hashpassword = await bcrypt.hash(password, 10);
 
 
-        const user = await User.create({
-            email: email,
-            username: username,
-            password: hashpassword,
+        const user = await prisma.user.create({
+            data: {
+                email: email,
+                username: username,
+                fullName: fullName,
+                phone: phone,
+                password: hashpassword,
+                app: app
 
-            app: app
+
+            }
+
 
         });
 
@@ -175,8 +181,11 @@ async function loginUser(req, res) {
     }
 
     try {
-        const finduser = await User.findOne({
-            email: email
+        const finduser = await prisma.user.findUnique({
+            where: {
+                email: email
+            }
+
         })
 
         const payload = {
@@ -408,10 +417,14 @@ async function loadMyProfile(req, res) {
         return { verified: false, status: 401, message: "Unauthorized request" };
     };
 
-    const userId = req.user.email;
+    const email = req.user.email;
 
     try {
-        const response = await User.findOne({ email: userId });
+        const response = await prisma.user.findUnique({
+            where: {
+                email: email
+            }
+        })
 
         return res.status(200).json({ response: response, success: true });
 

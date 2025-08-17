@@ -1,7 +1,8 @@
 import User from "../models/user.model.js";
 import MyContact from "../models/user.contactModel.js";
 import MessageRequest from "../models/message.request.js";
-
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 
 async function addToContactChatter(req, res) {
     if (!req.user) {
@@ -16,30 +17,48 @@ async function addToContactChatter(req, res) {
         const { contactId } = req.body;
         console.log(contactId, userId);
 
-        const contact = await User.findOne({ username: contactId });
+        const contact = await prisma.user.findFirst({
+            where: {
+                username: contactId
+            }
+        });
         console.log(contact);
         if (!contact) {
             return { verified: false, status: 404, message: `No User Found wih username ${contactId}` };
         };
-
-        const createContact = await MyContact.create({
-            userId: userId,
-            contactUserId: contact._id,
-            username: contact.username
+        const existingContact = await prisma.contacts.findFirst({
+            where: {
+                OR: [
+                    {
+                        ownerId: userId,
+                        contactId: contact.id,
+                    },
+                    {
+                        ownerId: contact.id,
+                        contactId: userId,
+                    },
+                ],
+            },
         });
 
-        const user = await User.findOne({
-            _id: userId
+        if (existingContact) {
+            return res.status(200).json({ message: "Contact Already Exists", contact: existingContact });
+        }
+
+
+        const createContact = await prisma.contacts.create({
+            data: {
+                ownerId: userId,
+                contactId: contact.id
+                ,
+
+
+
+            },
+         
         });
 
-        await MessageRequest.create({
-            senderId: userId,
-            recieverId: contact._id,
-            senderName: user.username,
 
-
-
-        })
 
         return res.status(201).json({ message: "Contact Added", contact: createContact });
 
@@ -116,12 +135,27 @@ async function checkForRequestChatter(req, res) {
     const userId = req.user.id
 
     try {
-        const request = await MessageRequest.find({
-            recieverId: userId,
-            accepted: false
-
+        const request = await prisma.contacts.findMany({
+            where: {
+                OR: [
+                    {
+                        ownerId: userId,
+                        accepted: false
+                    },
+                    {
+                        contactId: userId,
+                        accepted: false
+                    }
+                ]
+                
+            },
+            include : {
+                contact : true,
+                owner : true
+            }
         });
-        console.log(request);
+        console.log(request.owner);
+
 
         if (!request) {
             return res.status(200).json({ message: "No Request" })
@@ -146,7 +180,7 @@ async function getMyContactsChatter(req, res) {
     const userId = req.user.id
     try {
         const contacts = await MyContact.find({ userId: userId, accepted: true });
-        
+
         const contacts2 = contacts.map(contact => ({
             ...contact,
             type: "contacts"
