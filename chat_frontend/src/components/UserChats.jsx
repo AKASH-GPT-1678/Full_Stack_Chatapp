@@ -69,7 +69,7 @@ const UserChats = ({ username, chatId, type }) => {
             });
             console.log("profile", response.data);
             setMyUserName(response.data.response.username);
-            setUserId(response.data.response._id)
+            setUserId(response.data.response.id)
             return response;
 
 
@@ -83,8 +83,8 @@ const UserChats = ({ username, chatId, type }) => {
 
     useEffect(() => {
         loadMyProfile();
-        console.log(userId);
-
+        console.log("i am id", userId);
+        // 
         if (!userId) return;
 
         const socketInstance = io('http://localhost:3000', {
@@ -113,7 +113,7 @@ const UserChats = ({ username, chatId, type }) => {
             console.log('Disconnected from server');
         });
 
-   
+
         return () => {
             console.log("Cleaning up socket...");
             socketInstance.disconnect();
@@ -129,7 +129,7 @@ const UserChats = ({ username, chatId, type }) => {
                 senderId: userId.trim(),
                 groupId: chatId.trim(),
                 content: message.trim(),
-                app: "chatterbox"
+                app: "CHATTERBOX"
 
 
             }
@@ -191,28 +191,6 @@ const UserChats = ({ username, chatId, type }) => {
 
 
 
-    //         const pendingChats = await axios.get('http://localhost:3000/api/checkrequest', {
-    //             headers: {
-    //                 "Content-Type": "application/json",
-    //                 "Authorization": `Bearer ${token}`
-    //             }
-    //         });
-    //         console.log(pendingChats.data);
-
-    //     } catch (error) {
-    //         console.log(error);
-
-
-    //     }
-
-
-    // };
-
-
-    // useEffect(() => {
-    //     getMyChats();
-    // }, [chatId]);
-
     return (
         <>
 
@@ -223,7 +201,7 @@ const UserChats = ({ username, chatId, type }) => {
 
                     <div className=' flex-col w-full hidden md:flex h-screen mb-5 rounded-2xl' style={{ backgroundImage: "url('https://res.cloudinary.com/dffepahvl/image/upload/v1754586400/brvblkicc5iuc7pvuwyv.avif')" }}>
                         <div className='flex flex-col h-full'>
-     
+
 
                             <div className='min-h-[70px] w-full bg-white rounded-t-2xl flex-shrink-0'>
                                 <div className='p-3 flex flex-row'>

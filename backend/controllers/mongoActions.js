@@ -113,7 +113,7 @@ async function updateStatus(receiverId) {
   );
 
   console.log(`✅ Updated ${updated.modifiedCount} messages`);
-}
+};
 
 
 export { saveMessage, getMessage, checkPendingMessages, updateStatus };

@@ -27,10 +27,16 @@ model User {
 
   myContacts Contacts[] @relation("UserOwnedContacts")
   inContacts Contacts[] @relation("UserSavedAsContact")
+  groups     Groups[]
 }
 
 model Groups {
-  id String @id @default(uuid())
+  id           String  @id @default(uuid())
+  groupName    String
+  description  String
+  isPublic     Boolean
+  groupProfile String
+  members      User[]
 }
 
 model Contacts {
@@ -51,4 +57,20 @@ enum Apps {
   B2BMEATWEB
   FLEETOPS
   RENOVATOR
+}
+
+enum Status {
+  PENDING
+  SUCCESS
+}
+
+model Message {
+  id         String   @id @default(uuid())
+  senderId   String
+  receiverId String
+  groupId    String?
+  status     Status?
+  content    String
+  app        Apps
+  createdAt  DateTime @default(now())
 }

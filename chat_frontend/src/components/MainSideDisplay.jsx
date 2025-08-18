@@ -39,12 +39,12 @@ const MainSideDisplay = () => {
     const [items, setItems] = React.useState([]);
 
 
-    function handleCheckboxChange(e, name, id) {
+    function handleCheckboxChange(e, id) {
         if (e.target.checked) {
 
             setItems(prevItems => [
                 ...prevItems,
-                { name, id }
+                { id }
             ]);
         } else {
 
@@ -153,14 +153,11 @@ const MainSideDisplay = () => {
                     "Authorization": `Bearer ${token}`
                 }
             });
+            console.log("dear contact", response.data);
             console.log(response.data.contacts);
-            const data = response.data.contacts.map(contact => ({
-                ...contact,         // copy existing properties
-                type: "contacts"    // add the new property
-            }));
 
 
-            setMyContacts(data);
+            setMyContacts(response.data.contacts);
 
             return response.data;
         } catch (error) {
@@ -224,7 +221,7 @@ const MainSideDisplay = () => {
     };
 
 
-    const activeContact = myContacts.filter(contact => contact.contactUserId === activeChat);
+    const activeContact = myContacts.filter(contact => contact.id === activeChat);
     const divRef = useRef(null);
 
     React.useEffect(() => {
@@ -247,9 +244,12 @@ const MainSideDisplay = () => {
     useEffect(() => {
 
         checkForRequests();
-        // getContacts();
+        getContacts();
         loadMyProfile();
-        // fetchUserGroups();
+
+
+
+
 
 
 
@@ -259,7 +259,7 @@ const MainSideDisplay = () => {
 
     const sortedContacts = new Set(myContacts);
     const contactsArray = Array.from(sortedContacts);
-    const filterRequest =  requests.filter((request) => request.ownerId !== userId);
+    const filterRequest = requests.filter((request) => request.ownerId !== userId);
 
 
     return (
@@ -270,7 +270,7 @@ const MainSideDisplay = () => {
 
                 <div className='flex flex-row justify-between max-w-[400px] xl:max-w-[500px] items-center'>
                     <div className='p-3 flex flex-row'>
-                        
+
 
 
 
@@ -366,7 +366,7 @@ const MainSideDisplay = () => {
                                         </div>
                                         <div className='flex flex-row items-center ml-6 gap-2'>
                                             <ImCross size={26} className='cursor-pointer' fill='red' />
-                                            <TiTickOutline size={36} className='cursor-pointer' fill='green' onClick={() => makeRequest(request._id)} />
+                                            <TiTickOutline size={36} className='cursor-pointer' fill='green' onClick={() => makeRequest(request.id)} />
 
                                         </div>
 
@@ -387,8 +387,8 @@ const MainSideDisplay = () => {
                     {
                         contactsArray.length > 0 ? (
                             <div className='mt-3 h-full relative'>
-                                {contactsArray.map((contact, index) => (
-                                    <div key={index} className='flex flex-row min-h-[50px] relative  items-center cursor-pointer p-2  rounded-2xl hover:bg-gray-50' onClick={() => handleChatPage(contact.contactUserId)}>
+                                {myContacts.map((contact, index) => (
+                                    <div key={index} className='flex flex-row min-h-[50px] relative  items-center cursor-pointer p-2  rounded-2xl hover:bg-gray-50' onClick={() => handleChatPage(contact.id)}>
                                         <img src='https://res.cloudinary.com/dffepahvl/image/upload/v1753856887/ffssrmilcadfcna4q4kk.avif' alt={contact.username} className='rounded-full object-cover h-[60px] w-[70px] border border-gray-400' />
 
                                         <div className='flex flex-col ml-3 w-full'>
@@ -396,8 +396,8 @@ const MainSideDisplay = () => {
                                                 <p className='font-bold self-start'>
                                                     {contact.username}
                                                 </p>
-                                     
-                                                {newGroup && contact.type === "contacts" ? <input type='checkbox' className='flex flex-col accent-green-600  cursor-pointer self-center-safe p-2 h-[20px] w-[40px]' onChange={(e) => handleCheckboxChange(e, contact.username, contact.contactUserId)} /> : <p className='font-semibold text-gray-400'>09:25 PM</p>}
+
+                                                {newGroup  ? <input type='checkbox' className='flex flex-col accent-green-600  cursor-pointer self-center-safe p-2 h-[20px] w-[40px]' onChange={(e) => handleCheckboxChange(e, contact.id)} /> : <p className='font-semibold text-gray-400'>09:25 PM</p>}
 
                                             </div>
                                             <p className='mt-2'>
@@ -440,12 +440,12 @@ const MainSideDisplay = () => {
 
 
 
-                <UserChats username={activeContact.length > 0 ? activeContact[0].username : ""} chatId={activeContact.length > 0 ? activeContact[0].contactUserId : ""} type={activeContact.length > 0 ? activeContact[0]._id : ""} />
+                <UserChats username={activeContact.length > 0 ? activeContact[0].username : ""} chatId={activeContact.length > 0 ? activeContact[0].id : ""} type={activeContact.length > 0 ? activeContact[0].id : ""} />
             </div>
 
 
         </div>
     )
-}
+};
 
 export default MainSideDisplay;

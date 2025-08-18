@@ -55,7 +55,7 @@ async function addToContactChatter(req, res) {
 
 
             },
-         
+
         });
 
 
@@ -76,14 +76,14 @@ async function acceptRequestChatter(req, res) {
         return { verified: false, status: 401, message: "Unauthorized request" };
     };
 
-    const userId = req.user.id
+
 
 
     const { requestId } = req.body;
 
     try {
-        const request = await MessageRequest.findOne({
-            _id: requestId
+        const request = await prisma.contacts.findUniqueOrThrow({
+            where: { id: requestId }
         });
 
 
@@ -92,29 +92,22 @@ async function acceptRequestChatter(req, res) {
             return res.status(404).json({ message: "Request Not Found" });
         };
 
-        const contact = await MyContact.findOne({
-            contactUserId: userId,
-            userId: request.senderId
+        const updateContact = await prisma.contacts.update({
+            where: {
+                id: requestId
+
+            },
+            data: {
+                accepted: true
+            }
+
+        })
+
+        // if (!contact) {
+        //     return res.status(404).json({ message: "Contact Not Found", contact: updateContact });
+        // };
 
 
-        });
-
-        if (!contact) {
-            return res.status(404).json({ message: "Contact Not Found" });
-        };
-
-        const contact2 = await MyContact.create({
-            userId: userId,
-            contactUserId: request.senderId,
-            username: request.senderName,
-            accepted: true
-        });
-        contact2.save();
-
-        contact.accepted = true;
-        await contact.save();
-        request.accepted = true;
-        await request.deleteOne();
         return res.status(200).json({ message: "Request Accepted" });
 
     } catch (error) {
@@ -147,14 +140,14 @@ async function checkForRequestChatter(req, res) {
                         accepted: false
                     }
                 ]
-                
+
             },
-            include : {
-                contact : true,
-                owner : true
+            include: {
+                contact: true,
+                owner: true
             }
         });
-        console.log(request.owner);
+    
 
 
         if (!request) {
@@ -179,13 +172,33 @@ async function getMyContactsChatter(req, res) {
 
     const userId = req.user.id
     try {
-        const contacts = await MyContact.find({ userId: userId, accepted: true });
+        const contacts = await prisma.contacts.findMany({
+            where: {
+                OR: [
+                    {
+                        ownerId: userId,
+                        accepted: true
+                    },
+                    {
+                        contactId: userId,
+                        accepted: true
+                    }
+                ]
+            },
+            include: {
+                contact: true,
+                owner: true
+            }
+        });
 
-        const contacts2 = contacts.map(contact => ({
-            ...contact,
-            type: "contacts"
-        }));
-        return res.status(200).json({ contacts: contacts });
+        const updatedOwner = contacts.map(item => [item.owner, item.contact]);
+        
+
+
+
+
+        return res.status(200).json({ contacts: updatedOwner.flat().filter((item)=> item.id !== userId) });
+
     } catch (error) {
         console.log(error);
         return res.status(500).json({ error: "Something went wrong" });

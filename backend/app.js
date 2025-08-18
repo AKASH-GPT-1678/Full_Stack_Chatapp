@@ -11,9 +11,8 @@ import "./configs/mongClient.js";
 import { checkPendingMessages, saveMessage, updateStatus } from "./controllers/mongoActions.js";
 import Message from './models/messageModel.js';
 import { getGroupMemberIds } from './controllers/group.controller.js';
-import { group } from 'console';
-
-dotenv.config();
+import { checkPendingMessagesPG, saveMessagePG ,updateStatusPG} from './controllers/message.controller.js';
+// import { Status } from './controllers/enums.js';
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -39,10 +38,10 @@ io.on('connection', (socket) => {
 
     // Check for pending messages
     const checkAndSendPending = async () => {
-        const messages = await checkPendingMessages(userId);
+        const messages = await checkPendingMessagesPG(userId);
         if (messages && messages.length > 0) {
             socket.emit(userId, messages);
-            await updateStatus(userId);
+            await updateStatusPG(userId);
         }
     };
     checkAndSendPending();
@@ -52,10 +51,10 @@ io.on('connection', (socket) => {
             const getStatus = await redisClient.get(msg.receiverId);
 
             if (getStatus) {
-                // Receiver is online
+              
                 const newMessage = {
                     senderId: msg.senderId,
-                    groupId : "",
+                    groupId: "",
                     receiverId: msg.receiverId,
                     content: msg.content,
                     timestamp: new Date()
@@ -63,13 +62,12 @@ io.on('connection', (socket) => {
 
                 io.to(msg.receiverId).emit(msg.receiverId, newMessage);
 
-                await saveMessage(msg.senderId, msg.receiverId, msg.content, "na", "success", msg.app);
-
+                await saveMessagePG(msg.senderId, msg.receiverId, msg.content, "na", "SUCCESS", msg.app);
 
                 socket.emit('message-sent', { success: true, message: newMessage });
             } else {
 
-                await saveMessage(msg.senderId, msg.receiverId, msg.content, "na", "pending", msg.app);
+                await saveMessagePG(msg.senderId, msg.receiverId, msg.content, "na", "PENDING", msg.app);
                 socket.emit('message-sent', { success: true, pending: true });
             }
         } catch (error) {

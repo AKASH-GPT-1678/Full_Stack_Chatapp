@@ -6,6 +6,8 @@ import { Upload } from "../configs/multer.config.js";
 import { registerUser, loginUser, addToContact, addNickName, checkForRequest, acceptRequest, getMyContacts, loadMyProfile,deletUser, loadProfileDetails } from "../controllers/auth.controller.js";
 import { createGroup, getUserGroups } from "../controllers/group.controller.js";
 import { addProfileImage } from "../controllers/profile.controller.js";
+import { registerGroup } from "../controllers/chatter.group.controller.js";
+
 
 router.post("/register", registerUser);
 router.post("/login", loginUser);
@@ -25,6 +27,6 @@ router.get("/mycontactschatter", getMyContactsChatter);
 router.post("/creategroup", createGroup);
 router.get("/my-groups", getUserGroups);
 router.post("/addprofile" , Upload.single("profile") , addProfileImage);
-
+router.post("/registergroup", registerGroup);
 
 export default router;
