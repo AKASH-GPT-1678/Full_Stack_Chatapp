@@ -128,7 +128,7 @@ const MainSideDisplay = () => {
             console.log("profile", response.data);
             setMyUserName(response.data.response.username);
             setUserId(response.data.response.id);
-            setProfileImage(response.data.response.profileUrl);
+            setProfileImage(response.data.response.profileImage);
 
             return response;
 
@@ -269,6 +269,7 @@ const MainSideDisplay = () => {
     const contactsArray = Array.from(sortedContacts);
     const filterRequest = requests.filter((request) => request.ownerId !== userId);
     const activeGroup = [groups.find((group) => group.id === activeChat)];
+    const commonProfile = 'https://res.cloudinary.com/dffepahvl/image/upload/v1754295798/pwoveg1fjurga2kudwk4.png';
 
 
     return (
@@ -364,7 +365,7 @@ const MainSideDisplay = () => {
 
                             {contactsArray.length > 0 && myContacts.map((contact, index) => (
                                 <div key={`contact-${index}`} className='flex flex-row min-h-[50px] relative  items-center cursor-pointer p-2  rounded-2xl hover:bg-gray-50' onClick={() => handleChatPage(contact.id)}>
-                                    <img src='https://res.cloudinary.com/dffepahvl/image/upload/v1753856887/ffssrmilcadfcna4q4kk.avif' alt={contact.username} className='rounded-full object-cover h-[60px] w-[70px] border border-gray-400' />
+                                    <img src={contact.profileImage ? contact.profileImage : commonProfile.toString()} alt={contact.username} className='rounded-full object-cover h-[60px] w-[70px] border border-gray-400' />
 
                                     <div className='flex flex-col ml-3 w-full'>
                                         <div className='flex flex-row justify-between'>
@@ -384,7 +385,7 @@ const MainSideDisplay = () => {
 
                             {groups.length > 0 && groups.map((contact, index) => (
                                 <div key={`group-${index}`} className='flex flex-row min-h-[50px] relative  items-center cursor-pointer p-2  rounded-2xl hover:bg-gray-50' onClick={() => handleGroupPage(contact.id)}>
-                                    <img src='https://res.cloudinary.com/dffepahvl/image/upload/v1753856887/ffssrmilcadfcna4q4kk.avif' alt={contact.username} className='rounded-full object-cover h-[60px] w-[70px] border border-gray-400' />
+                                    <img src={contact.groupProfile ? contact.groupProfile : commonProfile.toString()} alt={contact.username} className='rounded-full object-cover h-[60px] w-[70px] border border-gray-400' />
 
                                     <div className='flex flex-col ml-3 w-full'>
                                         <div className='flex flex-row justify-between'>

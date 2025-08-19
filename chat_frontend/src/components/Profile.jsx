@@ -64,7 +64,7 @@ const ProfileSettings = () => {
 
     try {
       const formData = new FormData();
-      formData.append("profile", profileFile); // must match "profile" in Upload.single("profile")
+      formData.append("profile", profileFile); 
 
       const response = await axios.post(`${endpoint}/addprofile`, formData, {
         headers: {
@@ -130,9 +130,9 @@ const ProfileSettings = () => {
           <div className="flex flex-col items-center">
             <div className="relative mb-4">
               <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center overflow-hidden">
-                {profile?.profileUrl ? (
+                {profile?.profileImage ? (
                   <img
-                    src={profile?.profileUrl}
+                    src={profile?.profileImage}
                     alt="Profile"
                     className="w-full h-full object-cover"
                   />
@@ -152,7 +152,7 @@ const ProfileSettings = () => {
             </div>
             <h2 className="text-xl font-semibold text-gray-800">{profile?.username}</h2>
             <p className="text-gray-500">@{profile?.username}</p>
-            {showUploadButton && <button className="mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-full transition-colors" onClick={uploadProfilePhoto(profileFile)}>
+            {showUploadButton && <button className="mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-full transition-colors" onClick={()=>uploadProfilePhoto(profileFile)}>
               Upload
             </button>}
           </div>

@@ -33,6 +33,7 @@ const UserChats = ({ username, chatId, type }) => {
     const [userName, setMyUserName] = useState("");
     const [messages, setLatestMessages] = useState([]);
     const searchParams = new URLSearchParams(window.location.search);
+    const [oldChats, setOldChats] = useState([]);
     const receiverId = searchParams.get('receiverId');
     const [chats, setChats] = useState([]);
     const token = useIdStore((state) => state.value);
@@ -202,12 +203,7 @@ const UserChats = ({ username, chatId, type }) => {
         }
 
 
-    }
-
-
-
-
-        ;
+    };
 
 
     const filteredChats = (Array.isArray(messages) ? messages : [messages])
@@ -217,18 +213,24 @@ const UserChats = ({ username, chatId, type }) => {
             (msg.senderId === chatId || msg.receiverId === chatId || msg.groupId === chatId)
         );
 
-    const loadchats = async (idd) => {
-        await initDB()
-        const res = await getMessagesByContactId(idd);
-        console.log(res);
-        setChats(res);
-
-        ;
 
 
+    React.useEffect(() => {
+        const loadchats = async (idd) => {
+            await initDB()
+            const res = await getMessagesByContactId(idd);
+            console.log(res);
+            setOldChats(res);
+
+            ;
 
 
-    }
+
+
+        };
+        loadchats(chatId);
+
+    }, [chatId]);
 
 
 
@@ -257,6 +259,21 @@ const UserChats = ({ username, chatId, type }) => {
 
 
                             <div className='flex-1 overflow-y-auto px-2 py-2' style={{ maxHeight: 'calc(100vh - 140px)' }}>
+                                {
+                                    oldChats.map((item, index) => (
+                                        <div key={index} className={`flex flex-row w-fit p-4 rounded-2xl shadow-xl bg-white gap-2 mb-2 ${item.senderId === userId.trim() ? "justify-end ml-auto" : ""}`}>
+                                            <div className='bg-white'>
+                                                {item.senderId === userId.trim() ? <></> : <img src={Avatar} alt="profileimage" className='h-[50px] w-[50px] rounded-full bg-white' />}
+                                            </div>
+                                            <div className='self-start bg-white'>
+                                                <p className='font-semibold'>{item.senderId === userId.trim() ? "You" : username}</p>
+                                                <p className='max-w-[1000px]'>
+                                                    {item.content}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    ))
+                                }
                                 {
                                     filteredChats.map((item, index) => (
                                         <div key={index} className={`flex flex-row w-fit p-4 rounded-2xl shadow-xl bg-white gap-2 mb-2 ${item.senderId === userId.trim() ? "justify-end ml-auto" : ""}`}>
