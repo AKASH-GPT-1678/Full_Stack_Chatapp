@@ -101,10 +101,10 @@ const UserChats = ({ username, chatId, type }) => {
             console.log('I received a message', msg);
 
             handleIncomingMessage(msg);
-        
 
 
-          
+
+
         });
 
         socketInstance.on('disconnect', () => {

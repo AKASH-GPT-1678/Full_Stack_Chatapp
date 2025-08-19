@@ -121,7 +121,7 @@ export async function storeMessage(message) {
     console.log("Database initialized");
 
     // normalize & validate fields
-    let contactId = message.groupId === "na" ? message.senderId : message.groupId;
+    let contactId = message.groupId == "na" ? message.senderId : message.groupId;
 
     const saving = {
         content: (message.content || "").trim(),
@@ -135,7 +135,7 @@ export async function storeMessage(message) {
     await saveChatMessage(saving);
     console.log("Message saved successfully" + saving);
 
-    return saving; // return saved object for further use
+    return saving; 
 }
 
 // Usage example:
