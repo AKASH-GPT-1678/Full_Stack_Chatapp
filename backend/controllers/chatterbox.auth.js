@@ -147,7 +147,7 @@ async function checkForRequestChatter(req, res) {
                 owner: true
             }
         });
-    
+
 
 
         if (!request) {
@@ -192,12 +192,12 @@ async function getMyContactsChatter(req, res) {
         });
 
         const updatedOwner = contacts.map(item => [item.owner, item.contact]);
-        
 
 
 
 
-        return res.status(200).json({ contacts: updatedOwner.flat().filter((item)=> item.id !== userId) });
+
+        return res.status(200).json({ contacts: updatedOwner.flat().filter((item) => item.id !== userId) });
 
     } catch (error) {
         console.log(error);

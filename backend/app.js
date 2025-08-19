@@ -11,7 +11,8 @@ import "./configs/mongClient.js";
 import { checkPendingMessages, saveMessage, updateStatus } from "./controllers/mongoActions.js";
 import Message from './models/messageModel.js';
 import { getGroupMemberIds } from './controllers/group.controller.js';
-import { checkPendingMessagesPG, saveMessagePG ,updateStatusPG} from './controllers/message.controller.js';
+import { checkPendingMessagesPG, saveMessagePG, updateStatusPG } from './controllers/message.controller.js';
+import { getMembersIds } from './controllers/chatter.group.controller.js';
 // import { Status } from './controllers/enums.js';
 
 const server = http.createServer(app);
@@ -51,10 +52,10 @@ io.on('connection', (socket) => {
             const getStatus = await redisClient.get(msg.receiverId);
 
             if (getStatus) {
-              
+
                 const newMessage = {
                     senderId: msg.senderId,
-                    groupId: "",
+                    groupId: "na",
                     receiverId: msg.receiverId,
                     content: msg.content,
                     timestamp: new Date()
@@ -81,7 +82,7 @@ io.on('connection', (socket) => {
             return;
 
         }
-        const allIds = await getGroupMemberIds(msg.groupId);
+        const allIds = await getMembersIds(msg.groupId);
         const filteredMembers = allIds.filter(id => id !== msg.senderId);
         console.log(filteredMembers);
 
@@ -103,7 +104,7 @@ io.on('connection', (socket) => {
 
                         io.to(reciever).emit(reciever, newMessage);
 
-                        await saveMessage(msg.senderId, reciever, msg.content, msg.groupId, "success", msg.app);
+                        await saveMessagePG(msg.senderId, reciever, msg.content, msg.groupId, "SUCCESS", msg.app);
 
 
                         socket.emit('message-sent', { success: true, message: newMessage });
@@ -113,7 +114,7 @@ io.on('connection', (socket) => {
                         let receiver = memberIds[i];
                         console.log(" ia m pending", receiver)
 
-                        await saveMessage(msg.senderId, receiver, msg.content, msg.groupId, "pending", msg.app);
+                        await saveMessagePG(msg.senderId, receiver, msg.content, msg.groupId, "PENDING", msg.app);
                         socket.emit('message-sent', { success: true, pending: true });
 
                     }
@@ -159,4 +160,4 @@ app.get("/", (req, res) => {
 
 
 
-export default server
+export default server;

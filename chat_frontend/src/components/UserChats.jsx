@@ -10,40 +10,19 @@ import Avatar from "../assets/image.png";
 import { saveMessage } from './chatDb';
 import { getMessagesByReceiverId } from './chatDb';
 import { ms } from 'zod/v4/locales';
-import EmptyChat from './EmpyChat';
-// const chat = [
-//     { "name": "Me", "message": "Hi Rajesh, how are you?" },
-//     { "name": "Rajesh", "message": "Hey! I'm good, how about you?" },
-//     { "name": "Me", "message": "Doing well, just a bit tired from work." },
-//     { "name": "Rajesh", "message": "Yeah, work has been hectic for me too." },
-//     { "name": "Me", "message": "Did you complete the report for the client?" },
-//     { "name": "Rajesh", "message": "Almost done. I just need to add the final figures." },
-//     { "name": "Me", "message": "Cool. Want to meet for a coffee after work?" },
-//     { "name": "Rajesh", "message": "Sure, sounds like a plan. 6 PM?" },
-//     { "name": "Me", "message": "Perfect. Let’s meet at the usual café." },
-//     { "name": "Rajesh", "message": "Alright, I’ll see you there." },
-//     { "name": "Me", "message": "By the way, did you watch the match yesterday?" },
-//     { "name": "Rajesh", "message": "Yes! What a game. The last-minute goal was insane." },
-//     { "name": "Me", "message": "Absolutely! I jumped out of my seat." },
-//     { "name": "Rajesh", "message": "Same here. The whole family was shouting!" },
-//     { "name": "Me", "message": "Haha, sports bring everyone together." },
-//     { "name": "Rajesh", "message": "True that. Are you coming to the office party?" },
-//     { "name": "Me", "message": "Yes, I already RSVP’d. What about you?" },
-//     { "name": "Rajesh", "message": "Yup, I’ll be there. Hoping for good food!" },
-//     { "name": "Me", "message": "Me too! And maybe some music and games." },
-//     { "name": "Rajesh", "message": "For sure. Let’s dance a bit this time!" },
-//     { "name": "Me", "message": "Haha, only if you promise not to bail out." },
-//     { "name": "Rajesh", "message": "Deal! I’m in this time." },
-//     { "name": "Me", "message": "Okay then, it's a plan. Don’t be late." },
-//     { "name": "Rajesh", "message": "Never! I’ll be there before you." },
-//     { "name": "Me", "message": "We’ll see about that 😉" },
-//     { "name": "Rajesh", "message": "Challenge accepted!" },
-//     { "name": "Me", "message": "Haha, alright. Got to go now, meeting starting." },
-//     { "name": "Rajesh", "message": "Okay buddy, talk later." },
-//     { "name": "Me", "message": "Bye Rajesh!" },
-//     { "name": "Rajesh", "message": "Bye! Have a great day!" }
-// ]
 
+import EmptyChat from './EmpyChat';
+import { initDB, saveChatMessage, getMessagesByContactId, storeMessage } from './messageDB';
+// import {
+//     initDB,
+//     saveMessage,
+//     saveMessages,
+//     getAllMessages,
+//     getMessagesByChatId,
+//     getMessageById,
+//     deleteMessage,
+//     clearAllMessages
+// } from './messageDB.js';
 
 
 
@@ -78,6 +57,20 @@ const UserChats = ({ username, chatId, type }) => {
 
         }
     };
+    async function handleIncomingMessage(msg) {
+        try {
+            console.log("📩 Incoming message:", msg);
+
+            // save to DB
+            const saved = await storeMessage(msg);
+
+            // update UI state
+            setLatestMessages((prev) => [...prev, msg]);
+
+        } catch (error) {
+            console.error("❌ Failed to handle message:", error);
+        }
+    }
 
 
 
@@ -106,7 +99,12 @@ const UserChats = ({ username, chatId, type }) => {
 
         socketInstance.on(userId, (msg) => {
             console.log('I received a message', msg);
-            setLatestMessages((prevMessages) => [...prevMessages, msg]);
+
+            handleIncomingMessage(msg);
+        
+
+
+          
         });
 
         socketInstance.on('disconnect', () => {
@@ -140,6 +138,26 @@ const UserChats = ({ username, chatId, type }) => {
 
 
             )
+            initDB().then(() => {
+                console.log("Database initialized");
+                const saving = {
+                    content: message.trim(),
+                    groupId: chatId.trim(),
+                    receiverId: "",
+                    senderId: userId.trim(),
+                    timestamp: new Date().toISOString(),
+                    contactId: chatId
+
+
+                };
+                saveChatMessage(saving).then(() => {
+                    console.log("Message saved successfully");
+
+                });
+
+            });
+
+
             setLatestMessages((prevMessages) => [...prevMessages, msg]);
 
 
@@ -162,7 +180,23 @@ const UserChats = ({ username, chatId, type }) => {
 
 
 
-            )
+            );
+
+            initDB().then(() => {
+                console.log("Database initialized");
+                const saving = {
+                    content: message.trim(),
+                    groupId: "",
+                    receiverId: chatId.trim(),
+                    senderId: userId.trim(),
+                    timestamp: new Date().toISOString(),
+                    contactId: chatId
+
+                };
+                saveChatMessage(saving);
+
+            })
+
             setLatestMessages((prevMessages) => [...prevMessages, msg]);
 
         }
@@ -183,10 +217,18 @@ const UserChats = ({ username, chatId, type }) => {
             (msg.senderId === chatId || msg.receiverId === chatId || msg.groupId === chatId)
         );
 
+    const loadchats = async (idd) => {
+        await initDB()
+        const res = await getMessagesByContactId(idd);
+        console.log(res);
+        setChats(res);
+
+        ;
 
 
 
 
+    }
 
 
 
@@ -241,6 +283,7 @@ const UserChats = ({ username, chatId, type }) => {
                                     onChange={(e) => setMessage(e.target.value)}
                                 />
                                 <FiSend size={30} className='ml-5 bg-violet-50 cursor-pointer p-1 rounded' onClick={sendMessage} />
+                                <button onClick={() => loadchats(chatId)}>MSG</button>
                             </div>
                         </div>
                     </div>

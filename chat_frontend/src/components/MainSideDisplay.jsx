@@ -9,12 +9,8 @@ import { TiTickOutline } from "react-icons/ti";
 import Avatar from "../assets/image.png";
 import { useRef } from 'react';
 import UserChats from './UserChats';
-import useTempStore from '../userzustand';
-import { saveMessage } from './chatDb';
 import { IoArrowForwardCircle } from "react-icons/io5";
-import { set } from 'zod';
-import { da } from 'zod/v4/locales';
-import { use } from 'react';
+
 
 
 const MainSideDisplay = () => {
@@ -25,6 +21,7 @@ const MainSideDisplay = () => {
     const [showRequests, setShowRequests] = React.useState(false);
     const [newGroup, setNewGroup] = React.useState(false);
     const [myContacts, setMyContacts] = React.useState([]);
+    const [groupChat, setGroupChat] = React.useState(false);
     const [activeChat, setactiveChat] = React.useState("default");
     const [myUserName, setMyUserName] = React.useState('');
     const [profileImage, setProfileImage] = React.useState('');
@@ -81,7 +78,8 @@ const MainSideDisplay = () => {
 
     const handleChatPage = (id) => {
         setactiveChat(id);
-        // setShowOptions(false);
+        setGroupChat(false);
+
         const width = window.innerWidth;
         if (width < 500) {
             window.location.href = `/chat?receiverId=${id}`
@@ -93,6 +91,24 @@ const MainSideDisplay = () => {
 
 
     };
+
+
+    const handleGroupPage = (id) => {
+        setactiveChat(id);
+        setGroupChat(true);
+
+        const width = window.innerWidth;
+        if (width < 500) {
+            window.location.href = `/chat?receiverId=${id}`
+
+        } else {
+
+            return null;
+        }
+
+
+    };
+
 
     const handlecreateGroup = (members) => {
         localStorage.setItem('members', JSON.stringify(members));
@@ -192,25 +208,16 @@ const MainSideDisplay = () => {
         const token = useIdStore.getState().value;
 
         try {
-            const response = await axios.get("http://localhost:3000/api/my-groups", {
+            const response = await axios.get("http://localhost:3000/api/usergroups", {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
+            console.log(response.data);
 
-            console.log("My Groups:", response.data.data);
+            console.log("My Groups:", response.data);
             setGroups(response.data.data);
 
-            const filteredData = response.data.data.map(group => ({
-                contactUserId: group._id,          // from original group
-                username: group.groupName,         // from original group
-                accepted: true,                    // dummy
-                createdAt: "zyz", // dummy current time
-                userId: "group", // dummy userId
-                __v: 0,                            // dummy
-                _id: "group"
-            }));
-            setMyContacts(prevContacts => [...prevContacts, ...filteredData]);
 
 
 
@@ -246,6 +253,7 @@ const MainSideDisplay = () => {
         checkForRequests();
         getContacts();
         loadMyProfile();
+        fetchUserGroups();
 
 
 
@@ -260,23 +268,16 @@ const MainSideDisplay = () => {
     const sortedContacts = new Set(myContacts);
     const contactsArray = Array.from(sortedContacts);
     const filterRequest = requests.filter((request) => request.ownerId !== userId);
+    const activeGroup = [groups.find((group) => group.id === activeChat)];
 
 
     return (
-
         <div className='flex flex-row w-full bg-gray-200 p-8  gap-8'>
             <div className='flex flex-col w-full min-w-[350px] md:min-w-[400px] md:max-w-[500px] p-3 bg-white rounded-2xl shadow-2xl'>
 
-
                 <div className='flex flex-row justify-between max-w-[400px] xl:max-w-[500px] items-center'>
                     <div className='p-3 flex flex-row'>
-
-
-
-
-
                         <img src={profileImage ?? Avatar} alt="profileimage" className='h-[70px] w-[70px] rounded-full' />
-
 
                         <div className='flex flex-col self-center' onClick={() => window.location.href = `/profile?id=${userId}`}>
                             <p className='font-semibold text-2xl'>{myUserName}</p>
@@ -287,26 +288,20 @@ const MainSideDisplay = () => {
                         <IoSettingsOutline size={30} className='cursor-pointer' />
                         <BsThreeDotsVertical size={30} className='cursor-pointer' onClick={() => setShowOptions(!showOptions)} />
                         {
-
                             showOptions ? (
                                 <div className='absolute top-10 right-0 z-40 bg-white p-3 min-w-[150px] lg:min-w-[200px]  rounded-xl shadow-2xl  space-y-4' ref={divRef}>
                                     <p className='font-semibold' onClick={handleNewChat}>New Chat</p>
                                     <p className='font-semibold cursor-pointer' onClick={() => setNewGroup(!newGroup)}>New Group</p>
                                     <p className='font-semibold cursor-pointer' onClick={() => setShowRequests(!showRequests)}>View Requests</p>
                                     <p onClick={() => window.location.href = '/login'}>Login</p>
-
                                 </div>
-
                             ) : null
                         }
-
-
-
                     </div>
                 </div>
+
                 <div>
                     <div className='p-4 bg-gray-200 w-full rounded-3xl flex flex-row items-center min-h-[50px] justify-evenly'>
-
                         <p
                             className={`${activeType === "default" ? "px-6 rounded-2xl text-blue-500 bg-white py-2" : ""
                                 } cursor-pointer font-bold text-gray-500 px-4 md:px-8 py-2`}
@@ -330,120 +325,95 @@ const MainSideDisplay = () => {
                         >
                             Groups
                         </p>
-
-
                     </div>
 
                     <div>
                         <input type="text" className='w-full p-3 border-1 border-gray-400 mt-4  rounded-2xl' placeholder='Search' />
                     </div>
+
                     <div className='flex-col items-center justify-center hidden bg-white mt-8 transform duration-300  p-3 rounded-2xl' ref={DivRef}>
                         <p className='font-bold text-2xl'>Search for User</p>
                         <input type="text" className='w-full p-3 border-1 border-gray-400 mt-2  ' placeholder='add username to search' onChange={(e) => setAddChat(e.target.value)} />
-
-
-
                         <button className={`p-2 w-full bg-blue-500 text-white mt-2 cursor-pointer `} onClick={addNewUser}>New Chat</button>
-
-
                     </div>
-                    {
 
-                        showRequests && filterRequest.length > 0 ? (
-                            <div className='flex flex-col w-full mt-6'>
-                                {filterRequest.map((request, index) => (
-                                    <div key={index} className='flex flex-row p-2 border-2 gap-2 items-center min-h-[50px]'>
-                                        <div className='h-full rounded-full p-4 border-2'>
-
-                                        </div>
-                                        <div className='flex flex-col gap-2'>
-                                            <p>
-                                                {request.owner.username}
-                                            </p>
-                                            {/* <p>{request.id
-                                            }</p> */}
-
-                                        </div>
-                                        <div className='flex flex-row items-center ml-6 gap-2'>
-                                            <ImCross size={26} className='cursor-pointer' fill='red' />
-                                            <TiTickOutline size={36} className='cursor-pointer' fill='green' onClick={() => makeRequest(request.id)} />
-
-                                        </div>
-
-
+                    {showRequests && filterRequest.length > 0 ? (
+                        <div className='flex flex-col w-full mt-6'>
+                            {filterRequest.map((request, index) => (
+                                <div key={index} className='flex flex-row p-2 border-2 gap-2 items-center min-h-[50px]'>
+                                    <div className='h-full rounded-full p-4 border-2'>
                                     </div>
-
-                                ))}
-                            </div>
-
-                        ) : (
-                            <div>
-
-                            </div>
-
-                        )
-                    }
-
-                    {
-                        contactsArray.length > 0 ? (
-                            <div className='mt-3 h-full relative'>
-                                {myContacts.map((contact, index) => (
-                                    <div key={index} className='flex flex-row min-h-[50px] relative  items-center cursor-pointer p-2  rounded-2xl hover:bg-gray-50' onClick={() => handleChatPage(contact.id)}>
-                                        <img src='https://res.cloudinary.com/dffepahvl/image/upload/v1753856887/ffssrmilcadfcna4q4kk.avif' alt={contact.username} className='rounded-full object-cover h-[60px] w-[70px] border border-gray-400' />
-
-                                        <div className='flex flex-col ml-3 w-full'>
-                                            <div className='flex flex-row justify-between'>
-                                                <p className='font-bold self-start'>
-                                                    {contact.username}
-                                                </p>
-
-                                                {newGroup  ? <input type='checkbox' className='flex flex-col accent-green-600  cursor-pointer self-center-safe p-2 h-[20px] w-[40px]' onChange={(e) => handleCheckboxChange(e, contact.id)} /> : <p className='font-semibold text-gray-400'>09:25 PM</p>}
-
-                                            </div>
-                                            <p className='mt-2'>
-                                                Hey how are you doing
-                                            </p>
-                                        </div>
-
-
-
+                                    <div className='flex flex-col gap-2'>
+                                        <p>
+                                            {request.owner.username}
+                                        </p>
                                     </div>
-
-
-                                ))}
-
-
-                                <div>
-                                    {
-                                        items.length > 0 ? (
-                                            <IoArrowForwardCircle size={50} className='ml-auto cursor-pointer absolute  bottom-12 right-3.5' fill='green ' onClick={() => handlecreateGroup(items)} />
-
-                                        ) : (
-                                            <></>
-
-                                        )
-                                    }
-
+                                    <div className='flex flex-row items-center ml-6 gap-2'>
+                                        <ImCross size={26} className='cursor-pointer' fill='red' />
+                                        <TiTickOutline size={36} className='cursor-pointer' fill='green' onClick={() => makeRequest(request.id)} />
+                                    </div>
                                 </div>
+                            ))}
+                        </div>
+                    ) : null}
 
 
-                            </div>
-
-                        ) : (<></>)
-                    }
+                    {(contactsArray.length > 0 || groups.length > 0) && (
+                        <div className='mt-3 h-full relative'>
 
 
+                            {contactsArray.length > 0 && myContacts.map((contact, index) => (
+                                <div key={`contact-${index}`} className='flex flex-row min-h-[50px] relative  items-center cursor-pointer p-2  rounded-2xl hover:bg-gray-50' onClick={() => handleChatPage(contact.id)}>
+                                    <img src='https://res.cloudinary.com/dffepahvl/image/upload/v1753856887/ffssrmilcadfcna4q4kk.avif' alt={contact.username} className='rounded-full object-cover h-[60px] w-[70px] border border-gray-400' />
 
+                                    <div className='flex flex-col ml-3 w-full'>
+                                        <div className='flex flex-row justify-between'>
+                                            <p className='font-bold self-start'>
+                                                {contact.username}
+                                            </p>
+
+                                            {newGroup ? <input type='checkbox' className='flex flex-col accent-green-600  cursor-pointer self-center-safe p-2 h-[20px] w-[40px]' onChange={(e) => handleCheckboxChange(e, contact.id)} /> : <p className='font-semibold text-gray-400'>09:25 PM</p>}
+                                        </div>
+                                        <p className='mt-2'>
+                                            Hey how are you doing
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
+
+
+                            {groups.length > 0 && groups.map((contact, index) => (
+                                <div key={`group-${index}`} className='flex flex-row min-h-[50px] relative  items-center cursor-pointer p-2  rounded-2xl hover:bg-gray-50' onClick={() => handleGroupPage(contact.id)}>
+                                    <img src='https://res.cloudinary.com/dffepahvl/image/upload/v1753856887/ffssrmilcadfcna4q4kk.avif' alt={contact.username} className='rounded-full object-cover h-[60px] w-[70px] border border-gray-400' />
+
+                                    <div className='flex flex-col ml-3 w-full'>
+                                        <div className='flex flex-row justify-between'>
+                                            <p className='font-bold self-start'>
+                                                {contact.groupName}
+                                            </p>
+
+                                            {newGroup ? <input type='checkbox' className='flex flex-col accent-green-600  cursor-pointer self-center-safe p-2 h-[20px] w-[40px]' onChange={(e) => handleCheckboxChange(e, contact.id)} /> : <p className='font-semibold text-gray-400'>09:25 PM</p>}
+                                        </div>
+                                        <p className='mt-2'>
+                                            Hey how are you doing
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
+
+                            {/* Forward arrow for group creation */}
+                            {items.length > 0 && (
+                                <IoArrowForwardCircle size={50} className='ml-auto cursor-pointer absolute  bottom-12 right-3.5' fill='green ' onClick={() => handlecreateGroup(items)} />
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
+
             <div className='w-full'>
-
-
-
-                <UserChats username={activeContact.length > 0 ? activeContact[0].username : ""} chatId={activeContact.length > 0 ? activeContact[0].id : ""} type={activeContact.length > 0 ? activeContact[0].id : ""} />
+                {groupChat ? <UserChats username={activeGroup.length > 0 ? activeGroup[0].groupName : ""} chatId={activeGroup.length > 0 ? activeGroup[0].id : ""} type={"group"} />
+                    : <UserChats username={activeContact.length > 0 ? activeContact[0].username : ""} chatId={activeContact.length > 0 ? activeContact[0].id : ""} type={"chat"} />}
             </div>
-
-
         </div>
     )
 };
