@@ -69,6 +69,7 @@ async function addToContactChatter(req, res) {
     }
 
 };
+//accept request
 
 async function acceptRequestChatter(req, res) {
 
