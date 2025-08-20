@@ -300,7 +300,7 @@ const UserChats = ({ username, chatId, type }) => {
                                     onChange={(e) => setMessage(e.target.value)}
                                 />
                                 <FiSend size={30} className='ml-5 bg-violet-50 cursor-pointer p-1 rounded' onClick={sendMessage} />
-                                <button onClick={() => loadchats(chatId)}>MSG</button>
+                             
                             </div>
                         </div>
                     </div>

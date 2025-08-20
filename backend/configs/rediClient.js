@@ -1,7 +1,9 @@
 import redis from "redis";
+import dotenv from "dotenv";
 
+dotenv.config();
 const redisClient = redis.createClient({
-    url: "redis://localhost:6379",
+    url: process.env.REDIS_URL,
 });
 
 // Connect to Redis
@@ -10,4 +12,4 @@ redisClient.connect().then(() => {
 }).catch(console.error);
 
 
-export default redisClient
+export default redisClient;
