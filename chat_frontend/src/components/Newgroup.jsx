@@ -8,6 +8,7 @@ export default function Newgroup() {
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState("");
+  const endpoint = import.meta.env.VITE_BACKEND_ENDPOINT;
 
   const createGroup = async () => {
     setLoading(true);
@@ -23,7 +24,7 @@ export default function Newgroup() {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/registergroup",
+        `${endpoint}/api/registergroup`,
         {
           groupName,
           description,

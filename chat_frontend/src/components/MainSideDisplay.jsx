@@ -60,7 +60,7 @@ const MainSideDisplay = () => {
     const addNewUser = async () => {
 
         try {
-            const response = await axios.post('http://localhost:3000/api/addcontactchatter', { contactId: addChat.trim() }, {
+            const response = await axios.post(`${endpoint}/api/addcontactchatter`, { contactId: addChat.trim() }, {
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
@@ -119,7 +119,7 @@ const MainSideDisplay = () => {
 
     const loadMyProfile = async () => {
         try {
-            const response = await axios.get('http://localhost:3000/api/myprofile', {
+            const response = await axios.get(`${endpoint}/api/myprofile`, {
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
@@ -142,7 +142,7 @@ const MainSideDisplay = () => {
     const checkForRequests = async () => {
 
         try {
-            const data = await axios.get('http://localhost:3000/api/checkrequestchatter', {
+            const data = await axios.get(`${endpoint}/api/checkrequestchatter`, {
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
@@ -188,7 +188,7 @@ const MainSideDisplay = () => {
         }
 
         try {
-            const response = await axios.put('http://localhost:3000/api/acceptrequestchatter', { requestId: requestid }, {
+            const response = await axios.put(`${endpoint}/api/acceptrequestchatter`, { requestId: requestid }, {
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
@@ -208,7 +208,7 @@ const MainSideDisplay = () => {
         const token = useIdStore.getState().value;
 
         try {
-            const response = await axios.get("http://localhost:3000/api/usergroups", {
+            const response = await axios.get(`${endpoint}api/usergroups`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

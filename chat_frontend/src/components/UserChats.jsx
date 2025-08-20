@@ -37,11 +37,12 @@ const UserChats = ({ username, chatId, type }) => {
     const receiverId = searchParams.get('receiverId');
     const [chats, setChats] = useState([]);
     const token = useIdStore((state) => state.value);
+    const endpoint = import.meta.env.VITE_BACKEND_URL;
 
 
     const loadMyProfile = async () => {
         try {
-            const response = await axios.get('http://localhost:3000/api/myprofile', {
+            const response = await axios.get(`${endpoint}/api/myprofile`, {
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
@@ -81,7 +82,7 @@ const UserChats = ({ username, chatId, type }) => {
         // 
         if (!userId) return;
 
-        const socketInstance = io('http://localhost:3000', {
+        const socketInstance = io(endpoint, {
             autoConnect: false,
             query: { userId: userId || "akash" }
         });

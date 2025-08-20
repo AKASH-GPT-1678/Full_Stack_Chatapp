@@ -36,7 +36,7 @@ const onSubmit = async (data) => {
         password: data.password
     };
     try {
-        const response = await axios.post(`${endpoint}/login`, loginData, {
+        const response = await axios.post(`${endpoint}/api/login`, loginData, {
             headers: { "Content-Type": "application/json" }
         });
 

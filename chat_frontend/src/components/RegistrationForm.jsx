@@ -43,7 +43,7 @@ export default function RegistrationForm() {
         };
 
         try {
-            const response = await axios.post(`${endpoint}/register`, registerData, {
+            const response = await axios.post(`${endpoint}/api/register`, registerData, {
                 headers: {
                     "Content-Type": "application/json"
                 }
