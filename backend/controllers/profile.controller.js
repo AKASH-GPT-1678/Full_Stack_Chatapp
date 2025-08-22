@@ -1,5 +1,5 @@
 import { bucketName } from "../configs/multer.config.js";
-import storage from "../configs/cloud.Config.js";
+import storage from "../configs/cloud.config.js";
 import { PrismaClient } from "@prisma/client";
 import { pathname } from "../configs/multer.config.js";
 const prisma = new PrismaClient();
