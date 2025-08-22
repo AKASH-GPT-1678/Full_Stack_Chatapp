@@ -19,6 +19,7 @@ const loginSchema = z.object({
 export default function LoginForm() {
     const [someError, setSomeError] = useState(false);
     const setIdValue = useIdStore((state) => state.setTokenValue);
+    const setIsLoggedIn = useIdStore((state) => state.setIsLoggedIn);
     const {
         register,
         handleSubmit,
@@ -48,6 +49,7 @@ const onSubmit = async (data) => {
         // Only redirect if login was successful
         if (response.data.success === true) {
             setTimeout(() => {
+                setIsLoggedIn(true);
                 window.location.href = "/";
             }, 50);
         }

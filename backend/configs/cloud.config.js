@@ -7,21 +7,17 @@ function initializeStorage() {
     let storage;
     console.log("NODE_ENV:", process.env.NODE_ENV);
 
-    if (process.env.NODE_ENV === "production1") {
+    if (process.env.NODE_ENV === "development") {
         storage = new Storage({
             projectId: process.env.PROJECT_ID,
             keyFilename: "fleetops-464008-e4e6f94b9da1.json"
         });
-    } else if (process.env.NODE_ENV === "production2") {
-        storage = new Storage({
-            projectId: process.env.PROJECT_ID,
-            keyFilename: "/etc/secrets/GCP_FILE"
-        });
     } else {
-        // Local development fallback
+
+        const credentials = JSON.parse(process.env.GCP_CREDENTIALS);
         storage = new Storage({
-            projectId: process.env.PROJECT_ID,
-            keyFilename: path.join(process.cwd(), "fleetops-464008-e4e6f94b9da1.json")
+            projectId: credentials.project_id,
+            keyFilename: credentials
         });
     }
 

@@ -35,7 +35,7 @@ const ProfileSettings = () => {
   const userId = searchParams.get('id');
   const loadMyProfile = async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/api/myprofile`, {
+      const response = await axios.get(`${endpoint}/api/myprofile`, {
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
@@ -43,9 +43,7 @@ const ProfileSettings = () => {
       });
       console.log("profile", response.data.response);
       setProfile(response.data.response);
-      // setMyUserName(response.data.response.username);
-      // setUserId(response.data.response._id);
-      // setProfileImage(response.data.response.profileUrl);
+ 
 
       return response;
 
@@ -66,7 +64,7 @@ const ProfileSettings = () => {
       const formData = new FormData();
       formData.append("profile", profileFile); 
 
-      const response = await axios.post(`${endpoint}/addprofile`, formData, {
+      const response = await axios.post(`${endpoint}/api/addprofile`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           "Authorization": `Bearer ${token}`

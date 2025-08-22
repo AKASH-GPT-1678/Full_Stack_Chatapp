@@ -1,3 +1,4 @@
+import { is } from "zod/v4/locales";
 import { create } from "zustand";
 import { persist } from 'zustand/middleware';
 const useIdStore = create(
@@ -5,7 +6,10 @@ const useIdStore = create(
 
     (set) => ({
       value: "",
+      isLoggedIn: false,
       setTokenValue: (value) => set({ value }),
+      setIsLoggedIn: (value) => set({ isLoggedIn: value }),
+
 
     }),
 

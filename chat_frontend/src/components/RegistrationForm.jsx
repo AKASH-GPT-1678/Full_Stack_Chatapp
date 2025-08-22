@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
-import { da, en, fa } from "zod/v4/locales";
+import { FaEye } from "react-icons/fa";
 import { useState } from "react";
 
 const schema = z.object({
@@ -100,7 +100,7 @@ export default function RegistrationForm() {
                     {errors.username && <p className="text-red-500 text-sm">{errors.username.message}</p>}
                 </div>
 
-                {/* Phone (optional) */}
+             
                 <div>
                     <label className="block mb-1 font-medium">Phone</label>
                     <input
@@ -111,7 +111,7 @@ export default function RegistrationForm() {
                 </div>
 
                 {/* Password */}
-                <div>
+                <div className="relative">
                     <label className="block mb-1 font-medium">Password</label>
                     <input
                         type="password"
@@ -119,6 +119,9 @@ export default function RegistrationForm() {
                         className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="Enter your password"
                     />
+                    <div className="absolute top-3/4 right-3 transform -translate-y-1/2">
+                        <FaEye size={20} />
+                    </div>
                     {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
                 </div>
 

@@ -10,6 +10,7 @@ import Avatar from "../assets/image.png";
 import { useRef } from 'react';
 import UserChats from './UserChats';
 import { IoArrowForwardCircle } from "react-icons/io5";
+import { is } from 'zod/v4/locales';
 
 
 
@@ -32,6 +33,8 @@ const MainSideDisplay = () => {
 
     const token = useIdStore((state) => state.value);
     const endpoint = import.meta.env.VITE_BACKEND_ENDPOINT;
+    const setIsLoggedIn = useIdStore((state) => state.setIsLoggedIn);
+    const isLoggedIn = useIdStore((state) => state.isLoggedIn);
 
 
     const [items, setItems] = React.useState([]);
@@ -68,6 +71,12 @@ const MainSideDisplay = () => {
                 }
             });
             console.log(response.data);
+            if(response.data.message == 'Contact Added'){
+                document.getElementById('addUser').innerHTML = "Request Sent";
+                   DivRef.current.style.display = 'none';
+
+                window.location.reload();
+            }
             return response;
 
 
@@ -130,14 +139,16 @@ const MainSideDisplay = () => {
             setMyUserName(response.data.response.username);
             setUserId(response.data.response.id);
             setProfileImage(response.data.response.profileImage);
-            setVerified(true)
+            setIsLoggedIn(true);
+
 
             return response;
 
 
         } catch (error) {
             console.log("error fetchingprofile", error);
-            setVerified(false);
+            setIsLoggedIn(false);
+
             console.log(error);
 
         }
@@ -167,7 +178,7 @@ const MainSideDisplay = () => {
 
     async function getContacts() {
         try {
-            const response = await axios.get(`${endpoint}/mycontactschatter`, {
+            const response = await axios.get(`${endpoint}/api/mycontactschatter`, {
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
@@ -255,6 +266,9 @@ const MainSideDisplay = () => {
     });
 
     useEffect(() => {
+        if (!isLoggedIn) {
+            window.location.href = '/login';
+        }
 
 
         checkForRequests();
@@ -288,8 +302,8 @@ const MainSideDisplay = () => {
             <div className='flex flex-col w-full min-w-[350px] md:min-w-[400px] md:max-w-[500px] p-3 bg-white rounded-2xl shadow-2xl'>
 
                 <div className='flex flex-row justify-between max-w-[400px] xl:max-w-[500px] items-center'>
-                    <div className='p-3 flex flex-row'>
-                        <img src={profileImage || commonProfile} alt="profileimage" className='h-[70px] w-[70px] rounded-full' />
+                    <div className='p-3 flex flex-row gap-2'>
+                        <img src={profileImage || commonProfile} alt="profileimage" className='h-[60px] w-[60px] rounded-full' />
 
                         <div className='flex flex-col self-center' onClick={() => window.location.href = `/profile?id=${userId}`}>
                             <p className='font-semibold text-2xl'>{myUserName}</p>
@@ -346,7 +360,7 @@ const MainSideDisplay = () => {
                     <div className='flex-col items-center justify-center hidden bg-white mt-8 transform duration-300  p-3 rounded-2xl' ref={DivRef}>
                         <p className='font-bold text-2xl'>Search for User</p>
                         <input type="text" className='w-full p-3 border-1 border-gray-400 mt-2  ' placeholder='add username to search' onChange={(e) => setAddChat(e.target.value)} />
-                        <button className={`p-2 w-full bg-blue-500 text-white mt-2 cursor-pointer `} onClick={addNewUser}>New Chat</button>
+                        <button className={`p-2 w-full bg-blue-500 text-white mt-2 cursor-pointer `} onClick={addNewUser} id='addUser'>New Chat</button>
                     </div>
 
                     {showRequests && filterRequest.length > 0 ? (
@@ -413,7 +427,7 @@ const MainSideDisplay = () => {
                                 </div>
                             ))}
 
-                            {/* Forward arrow for group creation */}
+                         
                             {items.length > 0 && (
                                 <IoArrowForwardCircle size={50} className='ml-auto cursor-pointer absolute  bottom-12 right-3.5' fill='green ' onClick={() => handlecreateGroup(items)} />
                             )}
