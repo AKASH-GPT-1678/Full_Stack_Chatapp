@@ -205,7 +205,43 @@ async function getMyContactsChatter(req, res) {
         return res.status(500).json({ error: "Something went wrong" });
     }
 
+};
+
+async function checkandVerifyToken(req, res) {
+    if (!req.user) {
+        return { verified: false, status: 401, message: "Unauthorized request" };
+    };
+
+    if (req.user) {
+        return res.status(200).json({ message: "Token is valid", verified: true });
+    }
+
+}
+
+async function loadMyProfile(req, res) {
+
+
+    try {
+        if (!req.user) {
+            return { verified: false, status: 401, message: "Unauthorized request" };
+        };
+
+        const email = req.user.email;
+        const response = await prisma.user.findUnique({
+            where: {
+                email: email
+            }
+        })
+
+        return res.status(200).json({ response: response, success: true });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: "Something went wrong", error: error });
+
+    }
+
 }
 
 
-export { addToContactChatter, acceptRequestChatter, checkForRequestChatter, getMyContactsChatter };
+export { addToContactChatter, acceptRequestChatter, checkForRequestChatter, getMyContactsChatter, checkandVerifyToken, loadMyProfile };

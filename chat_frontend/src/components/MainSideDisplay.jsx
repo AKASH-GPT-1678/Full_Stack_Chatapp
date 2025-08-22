@@ -27,6 +27,7 @@ const MainSideDisplay = () => {
     const [profileImage, setProfileImage] = React.useState('');
     const [userId, setUserId] = React.useState('');
     const [addChat, setAddChat] = React.useState('');
+    const [verified, setVerified] = React.useState(false);
     const [groups, setGroups] = React.useState([]);
 
     const token = useIdStore((state) => state.value);
@@ -129,11 +130,14 @@ const MainSideDisplay = () => {
             setMyUserName(response.data.response.username);
             setUserId(response.data.response.id);
             setProfileImage(response.data.response.profileImage);
+            setVerified(true)
 
             return response;
 
 
         } catch (error) {
+            console.log("error fetchingprofile", error);
+            setVerified(false);
             console.log(error);
 
         }
@@ -228,6 +232,8 @@ const MainSideDisplay = () => {
     };
 
 
+
+
     const activeContact = myContacts.filter(contact => contact.id === activeChat);
     const divRef = useRef(null);
 
@@ -250,6 +256,7 @@ const MainSideDisplay = () => {
 
     useEffect(() => {
 
+
         checkForRequests();
         getContacts();
         loadMyProfile();
@@ -263,7 +270,11 @@ const MainSideDisplay = () => {
 
 
 
-    }, []);
+
+
+
+
+    }, [verified]);
 
     const sortedContacts = new Set(myContacts);
     const contactsArray = Array.from(sortedContacts);
@@ -278,7 +289,7 @@ const MainSideDisplay = () => {
 
                 <div className='flex flex-row justify-between max-w-[400px] xl:max-w-[500px] items-center'>
                     <div className='p-3 flex flex-row'>
-                        <img src={profileImage ?? Avatar} alt="profileimage" className='h-[70px] w-[70px] rounded-full' />
+                        <img src={profileImage || commonProfile} alt="profileimage" className='h-[70px] w-[70px] rounded-full' />
 
                         <div className='flex flex-col self-center' onClick={() => window.location.href = `/profile?id=${userId}`}>
                             <p className='font-semibold text-2xl'>{myUserName}</p>

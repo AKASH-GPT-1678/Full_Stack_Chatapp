@@ -1,9 +1,9 @@
 import { Router } from "express";
 const router = Router();
 import vehicleVerification from "../controllers/vehicle.verification.js";
-import { addToContactChatter ,acceptRequestChatter, checkForRequestChatter, getMyContactsChatter } from "../controllers/chatterbox.auth.js";
+import { addToContactChatter ,acceptRequestChatter, checkForRequestChatter, getMyContactsChatter ,checkandVerifyToken, loadMyProfile} from "../controllers/chatterbox.auth.js";
 import { Upload } from "../configs/multer.config.js";
-import { registerUser, loginUser, addToContact, addNickName, checkForRequest, acceptRequest, getMyContacts, loadMyProfile,deletUser, loadProfileDetails } from "../controllers/auth.controller.js";
+import { registerUser, loginUser, addToContact, addNickName, checkForRequest, acceptRequest, getMyContacts,deletUser, loadProfileDetails } from "../controllers/auth.controller.js";
 import { createGroup, getUserGroups } from "../controllers/group.controller.js";
 import { addProfileImage, saveProduct } from "../controllers/profile.controller.js";
 import { registerGroup , getGroupsofUser  } from "../controllers/chatter.group.controller.js";
@@ -29,5 +29,5 @@ router.get("/my-groups", getUserGroups);
 router.post("/addprofile" , Upload.single("profile") , saveProduct);
 router.post("/registergroup", registerGroup);
 router.get("/usergroups", getGroupsofUser);
-
+router.get("/checktoken", checkandVerifyToken);
 export default router;
