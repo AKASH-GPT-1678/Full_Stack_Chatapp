@@ -32,10 +32,11 @@ const UserChats = ({ username, chatId, type }) => {
     const [userId, setUserId] = useState("");
     const [userName, setMyUserName] = useState("");
     const [messages, setLatestMessages] = useState([]);
+    const [chatingId, setChatingId] = useState(chatId);
     const searchParams = new URLSearchParams(window.location.search);
     const [oldChats, setOldChats] = useState([]);
     const receiverId = searchParams.get('receiverId');
-    const [chats, setChats] = useState([]);
+
     const token = useIdStore((state) => state.value);
     const endpoint = import.meta.env.VITE_BACKEND_URL;
 
@@ -120,6 +121,9 @@ const UserChats = ({ username, chatId, type }) => {
         };
 
     }, [userId]);
+
+
+
 
 
     const sendMessage = () => {
@@ -229,9 +233,24 @@ const UserChats = ({ username, chatId, type }) => {
 
 
         };
-        loadchats(chatId);
+        loadchats(chatingId);
 
-    }, [chatId]);
+    }, [chatingId]);
+
+    React.useEffect(() => {
+        const width = window.innerWidth;
+        if (width < 500) {
+            setChatingId(receiverId)
+        }
+
+        // Cleanup function
+        return () => {
+            // Place cleanup logic here (e.g., remove event listeners)
+            console.log("Cleaning up window width effect");
+        };
+    }, []);
+
+
 
 
 

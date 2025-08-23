@@ -71,9 +71,9 @@ const MainSideDisplay = () => {
                 }
             });
             console.log(response.data);
-            if(response.data.message == 'Contact Added'){
+            if (response.data.message == 'Contact Added') {
                 document.getElementById('addUser').innerHTML = "Request Sent";
-                   DivRef.current.style.display = 'none';
+                DivRef.current.style.display = 'none';
 
                 window.location.reload();
             }
@@ -86,21 +86,7 @@ const MainSideDisplay = () => {
         }
     };
 
-    const handleChatPage = (id) => {
-        setactiveChat(id);
-        setGroupChat(false);
 
-        const width = window.innerWidth;
-        if (width < 500) {
-            window.location.href = `/chat?receiverId=${id}`
-
-        } else {
-
-            return null;
-        }
-
-
-    };
 
 
     const handleGroupPage = (id) => {
@@ -247,6 +233,21 @@ const MainSideDisplay = () => {
 
     const activeContact = myContacts.filter(contact => contact.id === activeChat);
     const divRef = useRef(null);
+    const handleChatPage = (id) => {
+        setactiveChat(id);
+        setGroupChat(false);
+
+        const width = window.innerWidth;
+        if (width < 500) {
+            window.location.href = `/chat?receiverId=${id}&username=${activeContact[0]?.username || "deepedh"}`
+
+        } else {
+
+            return null;
+        }
+
+
+    };
 
     React.useEffect(() => {
         const handleClickOutside = (event) => {
@@ -427,7 +428,7 @@ const MainSideDisplay = () => {
                                 </div>
                             ))}
 
-                         
+
                             {items.length > 0 && (
                                 <IoArrowForwardCircle size={50} className='ml-auto cursor-pointer absolute  bottom-12 right-3.5' fill='green ' onClick={() => handlecreateGroup(items)} />
                             )}
