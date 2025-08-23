@@ -118,7 +118,7 @@ const ProfileSettings = () => {
         {/* Header */}
         <div className="flex items-center mb-8">
           <button className="mr-4 p-2 rounded-full hover:bg-gray-200 transition-colors">
-            <ArrowLeft className="w-6 h-6 text-gray-600" />
+            <ArrowLeft className="w-6 h-6 text-gray-600" onClick={() => window.history.back()} />
           </button>
           <h1 className="text-2xl font-bold text-gray-800">Profile & Settings</h1>
         </div>

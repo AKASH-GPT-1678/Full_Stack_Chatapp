@@ -51,6 +51,7 @@ export const saveChatMessage = async (messageData) => {
 
 // Get all messages for a specific contact ID
 export const getMessagesByContactId = (contactId) => {
+    if(!contactId) return;
     return new Promise((resolve, reject) => {
         if (!db) {
             reject(new Error('Database not initialized'));

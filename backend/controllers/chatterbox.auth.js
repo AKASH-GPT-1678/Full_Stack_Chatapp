@@ -246,6 +246,7 @@ async function loadMyProfile(req, res) {
 ;
 // Example Express route handler
 async function checkUserStatus(req, res) {
+    console.log("checkUserStatus called");
   try {
     // 1. Check if user is authenticated
     if (!req.user) {
@@ -256,8 +257,8 @@ async function checkUserStatus(req, res) {
       });
     }
 
-    // 2. Extract userId from params
     const { userId } = req.params;
+    console.log("Iam arived")
 
     if (!userId || typeof userId !== "string") {
       return res.status(400).json({
@@ -278,7 +279,7 @@ async function checkUserStatus(req, res) {
       });
     }
 
-    // 4. If found
+  
     return res.status(200).json({
       verified: true,
       status: 200,

@@ -9,7 +9,7 @@ import axios from 'axios';
 import Avatar from "../assets/image.png";
 import { saveMessage } from './chatDb';
 import { getMessagesByReceiverId } from './chatDb';
-import { ms } from 'zod/v4/locales';
+import { fa, ms } from 'zod/v4/locales';
 
 import EmptyChat from './EmpyChat';
 import { initDB, saveChatMessage, getMessagesByContactId, storeMessage } from './messageDB';
@@ -33,13 +33,13 @@ const UserChats = ({ username, chatId, type }) => {
     const [userName, setMyUserName] = useState("");
     const [messages, setLatestMessages] = useState([]);
     const [chatingId, setChatingId] = useState(chatId);
+    const [currentChatStaus, setCurrentChatStatus] = useState(false);
     const searchParams = new URLSearchParams(window.location.search);
     const [oldChats, setOldChats] = useState([]);
     const receiverId = searchParams.get('receiverId');
 
     const token = useIdStore((state) => state.value);
-    const endpoint = import.meta.env.VITE_BACKEND_URL;
-
+    const endpoint = import.meta.env.VITE_BACKEND_ENDPOINT;
 
     const loadMyProfile = async () => {
         try {
@@ -49,9 +49,10 @@ const UserChats = ({ username, chatId, type }) => {
                     "Authorization": `Bearer ${token}`
                 }
             });
-            console.log("profile", response.data);
+            console.log("dear profile", response.data);
             setMyUserName(response.data.response.username);
-            setUserId(response.data.response.id)
+            setUserId(response.data.response.id);
+            console.log("i am id", response.data.response.id);
             return response;
 
 
@@ -80,10 +81,11 @@ const UserChats = ({ username, chatId, type }) => {
     useEffect(() => {
         loadMyProfile();
         console.log("i am id", userId);
-        // 
+
+
         if (!userId) return;
 
-        const socketInstance = io(endpoint, {
+        const socketInstance = io(`${endpoint}`, {
             autoConnect: false,
             query: { userId: userId || "akash" }
         });
@@ -120,7 +122,7 @@ const UserChats = ({ username, chatId, type }) => {
             socketInstance.disconnect();
         };
 
-    }, [userId]);
+    }, [chatId]);
 
 
 
@@ -220,6 +222,9 @@ const UserChats = ({ username, chatId, type }) => {
 
 
 
+
+
+
     React.useEffect(() => {
         const loadchats = async (idd) => {
             await initDB()
@@ -233,9 +238,37 @@ const UserChats = ({ username, chatId, type }) => {
 
 
         };
-        loadchats(chatingId);
 
-    }, [chatingId]);
+
+        const loadRedisStatus = async (userId) => {
+            try {
+                const response = await axios.get(`http://localhost:3000/api/userstatus/${userId}`, {
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    }
+                });
+
+
+                const { verified } = response.data;
+                console.log("Verified status:", response.data);
+
+                setCurrentChatStatus(verified);
+                return verified;
+            } catch (error) {
+                console.error("Error fetching user status:", error);
+                setCurrentChatStatus(false); // fallback to false
+                return false;
+            }
+        };
+
+        // Call it
+        loadRedisStatus(chatId);
+
+        loadchats(chatId);
+
+
+    }, [chatId]);
 
     React.useEffect(() => {
         const width = window.innerWidth;
@@ -272,14 +305,16 @@ const UserChats = ({ username, chatId, type }) => {
                                     <img src={Avatar} alt="profileimage" className='h-[70px] w-[70px] rounded-full' />
                                     <div className='flex flex-col self-center'>
                                         <p className='font-semibold text-2xl'>{username ?? "ak"}</p>
-                                        <p className='text-sm text-green-500'>Online</p>
+                                        <p className={`text-sm ${currentChatStaus ? "text-green-500" : "text-red-500"}`}>{currentChatStaus ? "Online" : "Offline"}</p>
                                     </div>
                                 </div>
                             </div>
 
 
                             <div className='flex-1 overflow-y-auto px-2 py-2' style={{ maxHeight: 'calc(100vh - 140px)' }}>
-                                {
+                                {oldChats &&
+
+
                                     oldChats.map((item, index) => (
                                         <div key={index} className={`flex flex-row w-fit p-4 rounded-2xl shadow-xl bg-white gap-2 mb-2 ${item.senderId === userId.trim() ? "justify-end ml-auto" : ""}`}>
                                             <div className='bg-white'>

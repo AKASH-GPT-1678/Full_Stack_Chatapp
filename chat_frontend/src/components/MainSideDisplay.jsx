@@ -209,7 +209,7 @@ const MainSideDisplay = () => {
         const token = useIdStore.getState().value;
 
         try {
-            const response = await axios.get(`${endpoint}api/usergroups`, {
+            const response = await axios.get(`${endpoint}/api/usergroups`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -255,7 +255,7 @@ const MainSideDisplay = () => {
                 divRef.current &&
                 !divRef.current.contains(event.target)
             ) {
-                setShowOptions(false); // hide the form when clicking outside
+                setShowOptions(false); 
             }
         };
 
