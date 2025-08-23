@@ -15,6 +15,7 @@ function initializeStorage() {
     } else {
 
         const credentials = JSON.parse(process.env.GCP_CREDENTIALS);
+        if(!credentials) throw new Error("GCP_CREDENTIALS not found");
         storage = new Storage({
             projectId: credentials.project_id,
             credentials : credentials
