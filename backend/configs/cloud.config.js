@@ -60,7 +60,9 @@ function initializeStorage() {
 
     } else {
         // Production: use base64 encoded credentials from env
-        const encoded =  encodedMessage;
+        const trailEncoded = process.env.GCP_CREDENTIALS;
+        console.log("trailEncoded:", trailEncoded);
+        const encoded = encodedMessage;
         if (!encoded) {
             throw new Error("❌ GCP_CREDENTIALS not set in environment variables");
         }
