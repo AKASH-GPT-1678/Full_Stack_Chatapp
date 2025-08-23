@@ -1,6 +1,6 @@
 import { Storage } from "@google-cloud/storage";
-import path from "path";
-import fs from "fs";
+import dotenv from "dotenv";
+dotenv.config();
 
 
 function initializeStorage() {
@@ -15,6 +15,7 @@ function initializeStorage() {
     } else {
 
         const credentials = JSON.parse(process.env.GCP_CREDENTIALS);
+        
         if(!credentials) throw new Error("GCP_CREDENTIALS not found");
         storage = new Storage({
             projectId: credentials.project_id,
