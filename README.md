@@ -1,4 +1,6 @@
 Hii i am readme .md 
+                        ![app logo](chat_frontend/public/chatlogo.png)
+
 # Update your `.env` file
 
 
