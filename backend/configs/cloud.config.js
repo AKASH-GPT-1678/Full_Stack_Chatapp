@@ -17,7 +17,7 @@ function initializeStorage() {
         const credentials = JSON.parse(process.env.GCP_CREDENTIALS);
         storage = new Storage({
             projectId: credentials.project_id,
-            keyFilename: credentials
+            credentials : credentials
         });
     }
 
