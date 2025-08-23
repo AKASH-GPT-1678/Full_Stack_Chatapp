@@ -298,8 +298,8 @@ const MainSideDisplay = () => {
 
 
     return (
-        <div className='flex flex-row w-full bg-gray-200 p-8  gap-8'>
-            <div className='flex flex-col w-full min-w-[350px] md:min-w-[400px] md:max-w-[500px] p-3 bg-white rounded-2xl shadow-2xl'>
+        <div className='flex flex-row w-full bg-gray-200 p-8  gap-8 '>
+            <div className='flex flex-col w-full min-w-[350px] md:min-w-[400px] md:max-w-[500px] p-3 min-h-screen bg-white rounded-2xl shadow-2xl'>
 
                 <div className='flex flex-row justify-between max-w-[400px] xl:max-w-[500px] items-center'>
                     <div className='p-3 flex flex-row gap-2'>
@@ -436,7 +436,7 @@ const MainSideDisplay = () => {
                 </div>
             </div>
 
-            <div className='w-full'>
+            <div className='w-full hidden sm:block'>
                 {groupChat ? <UserChats username={activeGroup.length > 0 ? activeGroup[0].groupName : ""} chatId={activeGroup.length > 0 ? activeGroup[0].id : ""} type={"group"} />
                     : <UserChats username={activeContact.length > 0 ? activeContact[0].username : ""} chatId={activeContact.length > 0 ? activeContact[0].id : ""} type={"chat"} />}
             </div>
