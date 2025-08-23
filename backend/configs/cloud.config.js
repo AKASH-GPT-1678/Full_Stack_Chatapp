@@ -14,13 +14,14 @@ function initializeStorage() {
         });
     } else {
 
-        const credentials = JSON.parse(process.env.GCP_CREDENTIALS);
-        console.log(credentials);
-        
-        if(!credentials) throw new Error("GCP_CREDENTIALS not found");
+        const credentials = JSON.parse(
+            Buffer.from(process.env.GCP_CREDENTIALS, "base64").toString("utf-8")
+        );
+
+        if (!credentials) throw new Error("GCP_CREDENTIALS not found");
         storage = new Storage({
             projectId: credentials.project_id,
-            credentials : credentials
+            credentials: credentials
         });
     }
 
