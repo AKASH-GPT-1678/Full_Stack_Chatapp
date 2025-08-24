@@ -247,55 +247,55 @@ async function loadMyProfile(req, res) {
 // Example Express route handler
 async function checkUserStatus(req, res) {
     console.log("checkUserStatus called");
-  try {
-    // 1. Check if user is authenticated
-    if (!req.user) {
-      return res.status(401).json({
-        verified: false,
-        status: 401,
-        message: "Unauthorized request",
-      });
+    try {
+        // 1. Check if user is authenticated
+        if (!req.user) {
+            return res.status(401).json({
+                verified: false,
+                status: 401,
+                message: "Unauthorized request",
+            });
+        }
+
+        const { userId } = req.params;
+        console.log("Iam arived")
+
+        if (!userId || typeof userId !== "string") {
+            return res.status(400).json({
+                verified: false,
+                status: 400,
+                message: "Invalid parameter: userId is required and must be a string",
+            });
+        }
+
+        // 3. Check Redis
+        const value = await redisClient.get(userId);
+
+        if (value === null) {
+            return res.status(200).json({
+                verified: false,
+                status: 200,
+                message: `User with id "${userId}" does not exist`,
+            });
+        }
+
+
+        return res.status(200).json({
+            verified: true,
+            status: 200,
+            message: `User with id "${userId}" exists`,
+        });
+    } catch (error) {
+        console.error("Error in checkUserStatus:", error);
+        return res.status(500).json({
+            verified: false,
+            status: 500,
+            message: "Internal server error",
+        });
     }
-
-    const { userId } = req.params;
-    console.log("Iam arived")
-
-    if (!userId || typeof userId !== "string") {
-      return res.status(400).json({
-        verified: false,
-        status: 400,
-        message: "Invalid parameter: userId is required and must be a string",
-      });
-    }
-
-    // 3. Check Redis
-    const value = await redisClient.get(userId);
-
-    if (value === null) {
-      return res.status(200).json({
-        verified: false,
-        status: 200,
-        message: `User with id "${userId}" does not exist`,
-      });
-    }
-
-  
-    return res.status(200).json({
-      verified: true,
-      status: 200,
-      message: `User with id "${userId}" exists`,
-    });
-  } catch (error) {
-    console.error("Error in checkUserStatus:", error);
-    return res.status(500).json({
-      verified: false,
-      status: 500,
-      message: "Internal server error",
-    });
-  }
 }
 
 
 
 
-export { addToContactChatter, acceptRequestChatter, checkForRequestChatter, getMyContactsChatter, checkandVerifyToken, loadMyProfile ,checkUserStatus};
+export { addToContactChatter, acceptRequestChatter, checkForRequestChatter, getMyContactsChatter, checkandVerifyToken, loadMyProfile, checkUserStatus };

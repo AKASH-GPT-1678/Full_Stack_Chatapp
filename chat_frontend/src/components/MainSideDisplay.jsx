@@ -255,7 +255,7 @@ const MainSideDisplay = () => {
                 divRef.current &&
                 !divRef.current.contains(event.target)
             ) {
-                setShowOptions(false); 
+                setShowOptions(false);
             }
         };
 
@@ -299,7 +299,7 @@ const MainSideDisplay = () => {
 
 
     return (
-        <div className='flex flex-row w-full bg-gray-200 p-8  gap-8 '>
+        <div className='flex flex-row w-full bg-gray-200 md:p-8 p-4 gap-8 '>
             <div className='flex flex-col w-full min-w-[350px] md:min-w-[400px] md:max-w-[500px] p-3 min-h-screen bg-white rounded-2xl shadow-2xl'>
 
                 <div className='flex flex-row justify-between max-w-[400px] xl:max-w-[500px] items-center'>

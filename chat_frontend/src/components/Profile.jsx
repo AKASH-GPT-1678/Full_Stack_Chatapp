@@ -43,7 +43,7 @@ const ProfileSettings = () => {
       });
       console.log("profile", response.data.response);
       setProfile(response.data.response);
- 
+
 
       return response;
 
@@ -62,7 +62,7 @@ const ProfileSettings = () => {
 
     try {
       const formData = new FormData();
-      formData.append("profile", profileFile); 
+      formData.append("profile", profileFile);
 
       const response = await axios.post(`${endpoint}/api/addprofile`, formData, {
         headers: {
@@ -115,7 +115,7 @@ const ProfileSettings = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-2xl mx-auto">
-        {/* Header */}
+
         <div className="flex items-center mb-8">
           <button className="mr-4 p-2 rounded-full hover:bg-gray-200 transition-colors">
             <ArrowLeft className="w-6 h-6 text-gray-600" onClick={() => window.history.back()} />
@@ -150,7 +150,7 @@ const ProfileSettings = () => {
             </div>
             <h2 className="text-xl font-semibold text-gray-800">{profile?.username}</h2>
             <p className="text-gray-500">@{profile?.username}</p>
-            {showUploadButton && <button className="mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-full transition-colors" onClick={()=>uploadProfilePhoto(profileFile)}>
+            {showUploadButton && <button className="mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-full transition-colors" onClick={() => uploadProfilePhoto(profileFile)}>
               Upload
             </button>}
           </div>
