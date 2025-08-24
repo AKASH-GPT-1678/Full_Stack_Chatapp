@@ -1,5 +1,6 @@
-Hii i am readme .md 
-                        ![app logo](chat_frontend/public/chatlogo.png)
+
+                                    ![app logo](chat_frontend/public/chatlogo.png)
+                                    Chatterbox
 
 # Update your `.env` file
 

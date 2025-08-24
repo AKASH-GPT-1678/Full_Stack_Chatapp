@@ -235,7 +235,7 @@ const UserChats = ({ username, chatId, type }) => {
                                 }
                             </div>
 
-                            <div className='bg-white flex flex-row items-center px-5 py-2 flex-shrink-0 rounded-b-2xl'>
+                            <div className='bg-white flex flex-row items-center px-5 py-2 flex-shrink-0 rounded-b-2xl '>
                                 <input
                                     type='text'
                                     placeholder='Send your Message'
