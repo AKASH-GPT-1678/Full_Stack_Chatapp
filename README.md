@@ -1,5 +1,5 @@
-hii
-                                    ![app logo](chat_frontend/public/chatlogo.png)
+ hii                                . 
+                                         ![app logo](chat_frontend/public/chatlogo.png)
                                     Chatterbox
 
 # Update your `.env` file
