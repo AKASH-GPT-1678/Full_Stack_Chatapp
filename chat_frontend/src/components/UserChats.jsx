@@ -98,7 +98,7 @@ const UserChats = ({ username, chatId, type }) => {
     }, [userId]);
 
     const sendMessage = () => {
-        alert("Sending message");
+
         if (!finalChatId) return;
 
         if (type === "group") {
@@ -125,7 +125,7 @@ const UserChats = ({ username, chatId, type }) => {
             inputRef.current.value = "";
 
             setLatestMessages((prevMessages) => [...prevMessages, msg]);
-        } else  {
+        } else {
             let msg = {
                 senderId: userId.trim(),
                 receiverId: finalChatId.trim(),
