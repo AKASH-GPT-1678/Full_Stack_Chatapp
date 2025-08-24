@@ -24,11 +24,13 @@ const UserChats = ({ username, chatId, type }) => {
 
     const token = useIdStore((state) => state.value);
     const endpoint = import.meta.env.VITE_BACKEND_ENDPOINT;
+    const inputRef = React.useRef(null);
 
-    // 👇 unified chatId logic
+
     const searchParams = new URLSearchParams(window.location.search);
     const receiverId = searchParams.get("receiverId");
     const finalChatId = window.innerWidth < 500 && receiverId ? receiverId : chatId;
+
 
     const loadMyProfile = async () => {
         try {
@@ -96,9 +98,10 @@ const UserChats = ({ username, chatId, type }) => {
     }, [userId]);
 
     const sendMessage = () => {
+        alert("Sending message");
         if (!finalChatId) return;
 
-        if (type.toString() === "group") {
+        if (type === "group") {
             let msg = {
                 senderId: userId.trim(),
                 groupId: finalChatId.trim(),
@@ -119,9 +122,10 @@ const UserChats = ({ username, chatId, type }) => {
                 };
                 saveChatMessage(saving);
             });
+            inputRef.current.value = "";
 
             setLatestMessages((prevMessages) => [...prevMessages, msg]);
-        } else {
+        } else  {
             let msg = {
                 senderId: userId.trim(),
                 receiverId: finalChatId.trim(),
@@ -142,6 +146,7 @@ const UserChats = ({ username, chatId, type }) => {
                 };
                 saveChatMessage(saving);
             });
+            inputRef.current.value = "";
 
             setLatestMessages((prevMessages) => [...prevMessages, msg]);
         }
@@ -234,10 +239,11 @@ const UserChats = ({ username, chatId, type }) => {
                                 <input
                                     type='text'
                                     placeholder='Send your Message'
-                                    className='p-3 w-full bg-violet-50 md:min-h-[50px] rounded-lg'
+                                    className='p-3 w-[90%] bg-violet-50 md:min-h-[50px] rounded-lg'
                                     onChange={(e) => setMessage(e.target.value)}
+                                    ref={inputRef}
                                 />
-                                <FiSend size={30} className='ml-5 bg-violet-50 cursor-pointer p-1 rounded' onClick={sendMessage} />
+                                <FiSend size={50} className='ml-5  cursor-pointer p-1 rounded' onClick={sendMessage} />
                             </div>
                         </div>
                     </div>
