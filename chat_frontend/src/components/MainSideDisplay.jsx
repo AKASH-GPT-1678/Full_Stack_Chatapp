@@ -11,6 +11,8 @@ import { useRef } from 'react';
 import UserChats from './UserChats';
 import { IoArrowForwardCircle } from "react-icons/io5";
 import { is } from 'zod/v4/locales';
+import { Link } from 'react-router-dom';
+import ShowRequests from './requests';
 
 
 
@@ -312,15 +314,31 @@ const MainSideDisplay = () => {
                         </div>
                     </div>
                     <div className='flex flex-row gap-3  p- relative'>
-                        <IoSettingsOutline size={30} className='cursor-pointer' />
-                        <BsThreeDotsVertical size={30} className='cursor-pointer' onClick={() => setShowOptions(!showOptions)} />
+
+                        <Link to={"profile"}>
+                            <IoSettingsOutline size={30} className='cursor-pointer' />
+                        </Link>
+                        <div className='relative'>
+                            {filterRequest.length > 0 && <div className='bg-red-500 h-3 w-3 rounded-full  absolute top-0 right-2'>
+
+                            </div>}
+                            <BsThreeDotsVertical size={30} className='cursor-pointer' onClick={() => setShowOptions(!showOptions)} />
+
+                        </div>
                         {
                             showOptions ? (
-                                <div className='absolute top-10 right-0 z-40 bg-white p-3 min-w-[150px] lg:min-w-[200px]  rounded-xl shadow-2xl  space-y-4' ref={divRef}>
+                                <div className='absolute top-10 right-0 z-40 bg-white p-4 min-w-[150px] lg:min-w-[200px] border-t-2 rounded-xl shadow-2xl  space-y-4' ref={divRef}>
                                     <p className='font-semibold' onClick={handleNewChat}>New Chat</p>
                                     <p className='font-semibold cursor-pointer' onClick={() => setNewGroup(!newGroup)}>New Group</p>
-                                    <p className='font-semibold cursor-pointer' onClick={() => setShowRequests(!showRequests)}>View Requests</p>
-                                    <p onClick={() => window.location.href = '/login'}>Login</p>
+                                    <p className='font-semibold cursor-pointer flex flex-row gap-2 items-center' onClick={() => setShowRequests(!showRequests)}>
+                                        {filterRequest.length > 0 && <span className='bg-red-500 h-2 w-2 rounded-full'>
+
+
+                                        </span>}
+
+
+                                        View Requests</p>
+                                    <p onClick={() => window.location.href = '/login'} className='cursor-pointer'>Login</p>
                                 </div>
                             ) : null
                         }
@@ -364,25 +382,9 @@ const MainSideDisplay = () => {
                         <button className={`p-2 w-full bg-blue-500 text-white mt-2 cursor-pointer `} onClick={addNewUser} id='addUser'>New Chat</button>
                     </div>
 
-                    {showRequests && filterRequest.length > 0 ? (
-                        <div className='flex flex-col w-full mt-6'>
-                            {filterRequest.map((request, index) => (
-                                <div key={index} className='flex flex-row p-2 border-2 gap-2 items-center min-h-[50px]'>
-                                    <div className='h-full rounded-full p-4 border-2'>
-                                    </div>
-                                    <div className='flex flex-col gap-2'>
-                                        <p>
-                                            {request.owner.username}
-                                        </p>
-                                    </div>
-                                    <div className='flex flex-row items-center ml-6 gap-2'>
-                                        <ImCross size={26} className='cursor-pointer' fill='red' />
-                                        <TiTickOutline size={36} className='cursor-pointer' fill='green' onClick={() => makeRequest(request.id)} />
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    ) : null}
+
+                    <ShowRequests showRequests={showRequests} filterRequest={filterRequest} />
+
 
 
                     {(contactsArray.length > 0 || groups.length > 0) && (

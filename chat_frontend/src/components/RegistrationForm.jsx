@@ -20,6 +20,7 @@ const schema = z.object({
 
 export default function RegistrationForm() {
     const [someError, setSomeError] = useState(false);
+    const [showPassword, setShowPassword] = React.useState(false);
     const {
         register,
         handleSubmit,
@@ -110,22 +111,22 @@ export default function RegistrationForm() {
                     />
                 </div>
 
-                {/* Password */}
+           
                 <div className="relative">
                     <label className="block mb-1 font-medium">Password</label>
                     <input
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         {...register("password")}
                         className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="Enter your password"
                     />
                     <div className="absolute top-3/4 right-3 transform -translate-y-1/2">
-                        <FaEye size={20} />
+                        <FaEye size={20} onClick={()=>setShowPassword(!showPassword)} className="cursor-pointer"/>
                     </div>
                     {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
                 </div>
 
-                {/* Submit */}
+        
                 <button
                     type="submit"
                     className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 transition"

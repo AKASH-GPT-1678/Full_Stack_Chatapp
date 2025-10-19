@@ -28,7 +28,7 @@ function App() {
       <Route path="/testing" element={<Testing />} />
       <Route path="/chat" element={<UserChats />} />
       <Route path="/newgroup" element={<Newgroup />} />
-      <Route path='/profile' element={<ProfileSettings/>}/>
+      <Route path='/profile' element={<ProfileSettings />} />
     </Routes>
 
 
