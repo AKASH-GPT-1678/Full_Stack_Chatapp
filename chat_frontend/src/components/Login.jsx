@@ -8,6 +8,7 @@ import { da } from "zod/v4/locales";
 import { useState } from "react";
 import axios from "axios";
 import useIdStore from "../zustand";
+import { FaEye } from "react-icons/fa";
 
 const loginSchema = z.object({
     email: z.string().email("Invalid email"),
@@ -18,6 +19,7 @@ const loginSchema = z.object({
 
 export default function LoginForm() {
     const [someError, setSomeError] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const setIdValue = useIdStore((state) => state.setTokenValue);
     const setIsLoggedIn = useIdStore((state) => state.setIsLoggedIn);
     const {
@@ -30,37 +32,37 @@ export default function LoginForm() {
     const endpoint = import.meta.env.VITE_BACKEND_ENDPOINT;
 
 
-const onSubmit = async (data) => {
-    console.log("Login Data:", data);
-    const loginData = {
-        email: data.email,
-        password: data.password
-    };
-    try {
-        const response = await axios.post(`${endpoint}/api/login`, loginData, {
-            headers: { "Content-Type": "application/json" }
-        });
+    const onSubmit = async (data) => {
+        console.log("Login Data:", data);
+        const loginData = {
+            email: data.email,
+            password: data.password
+        };
+        try {
+            const response = await axios.post(`${endpoint}/api/login`, loginData, {
+                headers: { "Content-Type": "application/json" }
+            });
 
-        console.log(response.data);
-        
-        // Update Zustand store
-        setIdValue(response.data.token);
+            console.log(response.data);
 
-        // Only redirect if login was successful
-        if (response.data.success === true) {
-            setTimeout(() => {
-                setIsLoggedIn(true);
-                window.location.href = "/";
-            }, 50);
+            // Update Zustand store
+            setIdValue(response.data.token);
+
+            // Only redirect if login was successful
+            if (response.data.success === true) {
+                setTimeout(() => {
+                    setIsLoggedIn(true);
+                    window.location.href = "/";
+                }, 50);
+            }
+
+            return data;
+
+        } catch (error) {
+            console.error(error);
+            setSomeError(true);
         }
-
-        return data;
-
-    } catch (error) {
-        console.error(error);
-        setSomeError(true);
-    }
-};
+    };
 
     return (
         <div className="max-w-md mx-auto p-6 bg-white rounded-xl shadow-md mt-10">
@@ -78,15 +80,18 @@ const onSubmit = async (data) => {
                     {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
                 </div>
 
-                {/* Password */}
-                <div>
+
+                <div className="relative">
                     <label className="block mb-1 font-medium">Password</label>
                     <input
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         {...register("password")}
                         className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="Enter your password"
                     />
+                    <div className="absolute top-3/4 right-3 transform -translate-y-1/2">
+                        <FaEye size={20} onClick={() => setShowPassword(!showPassword)} className="cursor-pointer" />
+                    </div>
                     {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
                 </div>
 

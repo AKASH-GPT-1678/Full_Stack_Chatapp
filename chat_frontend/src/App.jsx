@@ -12,6 +12,7 @@ import Testing from './components/Testing';
 import UserChats from './components/UserChats';
 import Newgroup from './components/Newgroup';
 import ProfileSettings from './components/Profile';
+import RollingGallery from "./components/RollingGallery"
 function App() {
   const [count, setCount] = useState(0);
   const [value, setValue] = useState("");
@@ -21,15 +22,19 @@ function App() {
 
   return (
 
-    <Routes>
-      <Route path="/" element={<MainSideDisplay />} />
-      <Route path="/register" element={<RegistrationForm />} />
-      <Route path='/login' element={<LoginForm />} />
-      <Route path="/testing" element={<Testing />} />
-      <Route path="/chat" element={<UserChats />} />
-      <Route path="/newgroup" element={<Newgroup />} />
-      <Route path='/profile' element={<ProfileSettings />} />
-    </Routes>
+    <div>
+      <RollingGallery autoplay={true} pauseOnHover={true} />
+    </div>
+
+    // <Routes>
+    //   <Route path="/" element={<MainSideDisplay />} />
+    //   <Route path="/register" element={<RegistrationForm />} />
+    //   <Route path='/login' element={<LoginForm />} />
+    //   <Route path="/testing" element={<Testing />} />
+    //   <Route path="/chat" element={<UserChats />} />
+    //   <Route path="/newgroup" element={<Newgroup />} />
+    //   <Route path='/profile' element={<ProfileSettings />} />
+    // </Routes>
 
 
   )

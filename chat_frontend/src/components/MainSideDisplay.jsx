@@ -382,8 +382,8 @@ const MainSideDisplay = () => {
                         <button className={`p-2 w-full bg-blue-500 text-white mt-2 cursor-pointer `} onClick={addNewUser} id='addUser'>New Chat</button>
                     </div>
 
-
-                    <ShowRequests showRequests={showRequests} filterRequest={filterRequest} />
+ 
+                    <ShowRequests  showRequests={showRequests} filterRequest={filterRequest}/>
 
 
 
