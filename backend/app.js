@@ -24,7 +24,10 @@ const io = new Server(server, {
 });
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: "http://localhost:3000", // must be specific, not "*"
+    credentials: true, // allow cookies / tokens
+  }));
 app.use(decodeToken);
 app.use("/api", router);
 io.on('connection', (socket) => {

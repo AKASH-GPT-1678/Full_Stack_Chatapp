@@ -52,6 +52,7 @@ async function registerUser(req, res) {
 
 
         });
+        console.log("User Registered successfully", user)
 
 
         return res.status(201).json({ message: "User registered", success: true, user: user });
