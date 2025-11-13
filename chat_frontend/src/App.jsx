@@ -22,19 +22,16 @@ function App() {
 
   return (
 
-    <div>
-      <RollingGallery autoplay={true} pauseOnHover={true} />
-    </div>
 
-    // <Routes>
-    //   <Route path="/" element={<MainSideDisplay />} />
-    //   <Route path="/register" element={<RegistrationForm />} />
-    //   <Route path='/login' element={<LoginForm />} />
-    //   <Route path="/testing" element={<Testing />} />
-    //   <Route path="/chat" element={<UserChats />} />
-    //   <Route path="/newgroup" element={<Newgroup />} />
-    //   <Route path='/profile' element={<ProfileSettings />} />
-    // </Routes>
+    <Routes>
+      <Route path="/" element={<MainSideDisplay />} />
+      <Route path="/register" element={<RegistrationForm />} />
+      <Route path='/login' element={<LoginForm />} />
+      <Route path="/testing" element={<Testing />} />
+      <Route path="/chat" element={<UserChats />} />
+      <Route path="/newgroup" element={<Newgroup />} />
+      <Route path='/profile' element={<ProfileSettings />} />
+    </Routes>
 
 
   )
