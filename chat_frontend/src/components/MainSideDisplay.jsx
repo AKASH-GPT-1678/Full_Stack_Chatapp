@@ -3,14 +3,10 @@ import { IoSettingsOutline } from "react-icons/io5";
 import axios from "axios";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import useIdStore from '../zustand';
-import { ImCross } from "react-icons/im";
 import { useEffect } from 'react';
-import { TiTickOutline } from "react-icons/ti";
-import Avatar from "../assets/image.png";
 import { useRef } from 'react';
 import UserChats from './UserChats';
 import { IoArrowForwardCircle } from "react-icons/io5";
-import { is } from 'zod/v4/locales';
 import { Link } from 'react-router-dom';
 import ShowRequests from './requests';
 
