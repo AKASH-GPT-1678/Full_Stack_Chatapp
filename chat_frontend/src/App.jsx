@@ -12,13 +12,9 @@ import Testing from './components/Testing';
 import UserChats from './components/UserChats';
 import Newgroup from './components/Newgroup';
 import ProfileSettings from './components/Profile';
-import RollingGallery from "./components/RollingGallery"
+import ForgotPassword from './components/ForgotPassword';
 function App() {
-  const [count, setCount] = useState(0);
-  const [value, setValue] = useState("");
 
-  const userId = useIdStore((state) => state.value);
-  const setIdValue = useIdStore((state) => state.setIdValue);
 
   return (
 
@@ -27,6 +23,7 @@ function App() {
       <Route path="/" element={<MainSideDisplay />} />
       <Route path="/register" element={<RegistrationForm />} />
       <Route path='/login' element={<LoginForm />} />
+      <Route path='/forgot-password' element={<ForgotPassword />} />
       <Route path="/testing" element={<Testing />} />
       <Route path="/chat" element={<UserChats />} />
       <Route path="/newgroup" element={<Newgroup />} />

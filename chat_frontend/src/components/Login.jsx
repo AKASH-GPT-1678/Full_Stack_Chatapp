@@ -4,7 +4,6 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { da } from "zod/v4/locales";
 import { useState } from "react";
 import axios from "axios";
 import useIdStore from "../zustand";
@@ -111,6 +110,8 @@ export default function LoginForm() {
 
 
                 <p>Don't have an account? <a href="/register" className="text-blue-600 mt-2 hover:underline">Register</a></p>
+
+                <a href="/forgot-password" className="text-blue-600 mt-1 hover:underline">Forgot Password?</a>
             </form>
         </div>
     );
