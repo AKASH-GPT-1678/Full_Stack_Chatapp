@@ -8,9 +8,6 @@ import http from "http";
 import redisClient from './configs/rediClient.js';
 import router from './routes/router.js';
 import "./configs/mongClient.js";
-import { checkPendingMessages, saveMessage, updateStatus } from "./controllers/mongoActions.js";
-import Message from './models/messageModel.js';
-import { getGroupMemberIds } from './controllers/group.controller.js';
 import { checkPendingMessagesPG, saveMessagePG, updateStatusPG } from './controllers/message.controller.js';
 import { getMembersIds } from './controllers/chatter.group.controller.js';
 

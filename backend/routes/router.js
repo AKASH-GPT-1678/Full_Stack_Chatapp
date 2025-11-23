@@ -3,7 +3,7 @@ const router = Router();
 import vehicleVerification from "../controllers/vehicle.verification.js";
 import { addToContactChatter ,acceptRequestChatter, checkForRequestChatter, getMyContactsChatter ,checkandVerifyToken, loadMyProfile, checkUserStatus} from "../controllers/chatterbox.auth.js";
 import { Upload } from "../configs/multer.config.js";
-import { registerUser, loginUser, addToContact, addNickName, checkForRequest, acceptRequest, getMyContacts,deletUser, loadProfileDetails } from "../controllers/auth.controller.js";
+import { registerUser, loginUser, addToContact, addNickName, checkForRequest, acceptRequest, getMyContacts,deletUser, loadProfileDetails, forgotPassword } from "../controllers/auth.controller.js";
 import { createGroup, getUserGroups } from "../controllers/group.controller.js";
 import { addProfileImage, saveProduct } from "../controllers/profile.controller.js";
 import { registerGroup , getGroupsofUser  } from "../controllers/chatter.group.controller.js";
@@ -31,5 +31,6 @@ router.post("/registergroup", registerGroup);
 router.get("/usergroups", getGroupsofUser);
 router.get("/checktoken", checkandVerifyToken);
 router.get("/userstatus/:userId", checkUserStatus);
+router.get('/forgot-password/:email' , forgotPassword)
 
 export default router;

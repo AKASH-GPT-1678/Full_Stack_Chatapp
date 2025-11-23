@@ -4,6 +4,8 @@ import { PrismaClient } from "@prisma/client";
 import MyContact from "../models/user.contactModel.js";
 import MessageRequest from "../models/message.request.js";
 import bcrypt from "bcrypt";
+import { sendEmail } from "../configs/mailCLient.js";
+import { generateOTP } from "../helpers/gotp.js";
 const prisma = new PrismaClient();
 
 
@@ -393,7 +395,30 @@ async function getMyContacts(req, res) {
         return res.status(500).json({ error: "Something went wrong" });
     }
 
-}
+};
+
+
+async function forgotPassword(req, res) {
+    try {
+        const { email } = req.params;
+
+        if (!email) {
+            return res.status(400).json({ message: "Email is required" });
+        }
+
+
+        const otp = generateOTP();
+
+
+        await sendEmail(email, "OTP Verification", `Your OTP is ${otp}`);
+
+        return res.json({ message: "OTP sent successfully", otp: otp });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: "Something went wrong" });
+    }
+};
+
 
 
 async function loadProfileDetails(req, res) {
@@ -416,4 +441,4 @@ async function loadProfileDetails(req, res) {
 
 
 
-export { registerUser, loginUser, checkForRequest, acceptRequest, checktoken, getMyContacts, addToContact, addNickName, deletUser, loadProfileDetails };
+export { registerUser, loginUser, checkForRequest, acceptRequest, checktoken, getMyContacts, addToContact, addNickName, deletUser, loadProfileDetails, forgotPassword };
