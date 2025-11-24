@@ -13,19 +13,27 @@ import { getMembersIds } from './controllers/chatter.group.controller.js';
 
 dotenv.config();
 const server = http.createServer(app);
-const io = new Server(server, {
-    cors: {
-        origin: "*",
-        methods: ["GET", "POST"]
-    }
-});
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://full-stack-chatapp-smoky.vercel.app"
+];
 
-app.use(express.json());
+// Express CORS
 app.use(cors({
-  origin: "*",
-  credentials: false   
+  origin: allowedOrigins,
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE"]
 }));
 
+// Socket.io CORS
+const io = new Server(server, {
+  cors: {
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+    credentials: true
+  }
+});
+app.use(express.json());
 app.use(decodeToken);
 app.use("/api", router);
 io.on('connection', (socket) => {
