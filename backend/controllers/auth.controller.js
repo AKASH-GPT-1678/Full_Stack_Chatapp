@@ -1,8 +1,5 @@
-import User from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
-import MyContact from "../models/user.contactModel.js";
-import MessageRequest from "../models/message.request.js";
 import bcrypt from "bcrypt";
 import { sendEmail } from "../configs/mailCLient.js";
 import { generateOTP } from "../helpers/gotp.js";

@@ -4,7 +4,6 @@ import vehicleVerification from "../controllers/vehicle.verification.js";
 import { addToContactChatter ,acceptRequestChatter, checkForRequestChatter, getMyContactsChatter ,checkandVerifyToken, loadMyProfile, checkUserStatus} from "../controllers/chatterbox.auth.js";
 import { Upload } from "../configs/multer.config.js";
 import { registerUser, loginUser, addToContact, addNickName, checkForRequest, acceptRequest, getMyContacts,deletUser, loadProfileDetails, forgotPassword } from "../controllers/auth.controller.js";
-import { createGroup, getUserGroups } from "../controllers/group.controller.js";
 import { addProfileImage, saveProduct } from "../controllers/profile.controller.js";
 import { registerGroup , getGroupsofUser  } from "../controllers/chatter.group.controller.js";
 
@@ -24,8 +23,6 @@ router.post("/addcontactchatter", addToContactChatter);
 router.put("/acceptrequestchatter", acceptRequestChatter);
 router.get("/checkrequestchatter", checkForRequestChatter);
 router.get("/mycontactschatter", getMyContactsChatter);
-router.post("/creategroup", createGroup);
-router.get("/my-groups", getUserGroups);
 router.post("/addprofile" , Upload.single("profile") , saveProduct);
 router.post("/registergroup", registerGroup);
 router.get("/usergroups", getGroupsofUser);
