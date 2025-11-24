@@ -9,6 +9,9 @@ const decodeToken = async (req, res, next) => {
   if (!authHeader) {
     return next();
   }
+    if (req.path.includes("register") || req.path.includes("login")) {
+    return next();
+  }
 
   const token = authHeader.split(' ')[1];
 

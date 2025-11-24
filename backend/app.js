@@ -10,7 +10,8 @@ import router from './routes/router.js';
 import "./configs/mongClient.js";
 import { checkPendingMessagesPG, saveMessagePG, updateStatusPG } from './controllers/message.controller.js';
 import { getMembersIds } from './controllers/chatter.group.controller.js';
-
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
 dotenv.config();
 const server = http.createServer(app);
 
@@ -30,11 +31,13 @@ app.use(cors({
 app.use(express.json());
 
 
+
+app.use("/api/auth", router);
 app.use(decodeToken);
-
-
 app.use("/api", router);
-
+prisma.$connect().then(() => {
+    console.log("Database connected");
+})
 
 const io = new Server(server, {
   cors: {

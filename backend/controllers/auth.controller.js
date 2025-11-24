@@ -12,6 +12,7 @@ const prisma = new PrismaClient();
 async function registerUser(req, res) {
     const { fullName, email, username, phone, password, app } = req.body;
     console.log(req.body);
+   
 
     if (!email || !username || !password) {
         return res.status(400).json({
