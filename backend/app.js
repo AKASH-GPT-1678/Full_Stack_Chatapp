@@ -22,9 +22,10 @@ const io = new Server(server, {
 
 app.use(express.json());
 app.use(cors({
-    origin: "http://localhost:5173", // must be specific, not "*"
-    credentials: true, // allow cookies / tokens
-  }));
+  origin: "*",
+  credentials: false   
+}));
+
 app.use(decodeToken);
 app.use("/api", router);
 io.on('connection', (socket) => {
