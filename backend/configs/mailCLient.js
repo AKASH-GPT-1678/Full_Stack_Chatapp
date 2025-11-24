@@ -15,7 +15,7 @@ const mailTransporter = nodemailer.createTransport({
 
 
 async function sendEmail(to, subject, text) {
-    console.log("to", Email);
+    
     let mailDetails = {
         from: Email,
         to: to,

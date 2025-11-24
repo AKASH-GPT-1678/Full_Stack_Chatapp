@@ -11,6 +11,7 @@ const prisma = new PrismaClient();
 
 async function registerUser(req, res) {
     const { fullName, email, username, phone, password, app } = req.body;
+    console.log(req.body);
 
     if (!email || !username || !password) {
         return res.status(400).json({
@@ -21,6 +22,8 @@ async function registerUser(req, res) {
 
 
     try {
+        console.log(req.body);
+        console.log("I am workding")
 
         const existingUser = await prisma.user.findFirst({
             where: {
@@ -404,7 +407,8 @@ async function forgotPassword(req, res) {
 
         if (!email) {
             return res.status(400).json({ message: "Email is required" });
-        }
+        };
+        console.log("mai hoon", email);
 
 
         const otp = generateOTP();
@@ -412,7 +416,7 @@ async function forgotPassword(req, res) {
 
         await sendEmail(email, "OTP Verification", `Your OTP is ${otp}`);
 
-        return res.json({ message: "OTP sent successfully", otp: otp });
+        return res.status(200).json({ message: "OTP sent successfully", otp: otp });
     } catch (err) {
         console.error(err);
         return res.status(500).json({ message: "Something went wrong" });

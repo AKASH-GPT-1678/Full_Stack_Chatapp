@@ -1,6 +1,3 @@
-import User from "../models/user.model.js";
-import MyContact from "../models/user.contactModel.js";
-import MessageRequest from "../models/message.request.js";
 import { PrismaClient } from "@prisma/client";
 import redisClient from "../configs/rediClient.js";
 const prisma = new PrismaClient();
@@ -192,6 +189,10 @@ async function getMyContactsChatter(req, res) {
                 owner: true
             }
         });
+        if(!contacts){
+            return res.status(200).json({ message: "No Contacts" })
+        }
+        console.log(contacts);
 
         const updatedOwner = contacts.map(item => [item.owner, item.contact]);
 

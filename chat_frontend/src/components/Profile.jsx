@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Camera, User, Mail, Phone, Bell, Shield, Moon, Globe, ArrowLeft, Check, X } from 'lucide-react';
 import useIdStore from '../zustand';
 import axios from 'axios';
-import Avatar from "../assets/image.png";
+
 const ProfileSettings = () => {
   const [profile, setProfile] = useState();
 
@@ -15,7 +15,7 @@ const ProfileSettings = () => {
   });
   const [profileFile, setProfileFile] = useState(null);
   const [showUploadButton, setShowUploadButton] = useState(false);
-  // ...existing code...
+  
 
 
   const [isEditing, setIsEditing] = useState({});

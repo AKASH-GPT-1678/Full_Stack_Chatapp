@@ -1,5 +1,5 @@
 import { useRef } from "react";
-export function OtpInput() {
+export function OtpInput({ otp }) {
     const inputRef = useRef([]);
 
     const handleClick = (index) => {
@@ -15,10 +15,11 @@ export function OtpInput() {
 
         if (e.key === " ") {
             console.log("Space pressed");
-            if(index  < 6) inputRef.current[index + 1 ].focus();
-            e.preventDefault(); // stop space
+            if (index < 6) inputRef.current[index + 1].focus();
+            e.preventDefault();
         }
     };
+    if (!otp) return null;
 
     return (
         <div style={{ display: "flex", gap: "8px" }}>
