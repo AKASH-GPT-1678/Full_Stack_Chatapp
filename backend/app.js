@@ -32,6 +32,7 @@ const allowedOrigins = [
   "http://localhost:5173",
   "https://full-stack-chatapp-smoky.vercel.app"
 ];
+//https://full-stack-chatapp-smoky.vercel.app/
 
 app.use(cors({
   origin: allowedOrigins,

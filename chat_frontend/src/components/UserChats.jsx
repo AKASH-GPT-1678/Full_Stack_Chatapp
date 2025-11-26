@@ -168,7 +168,7 @@ const UserChats = ({ username, chatId, type }) => {
 
         const loadRedisStatus = async (userId) => {
             try {
-                const response = await axios.get(`http://localhost:3000/api/userstatus/${userId}`, {
+                const response = await axios.get(`${endpoint}/api/userstatus/${userId}`, {
                     headers: {
                         "Content-Type": "application/json",
                         "Authorization": `Bearer ${token}`
