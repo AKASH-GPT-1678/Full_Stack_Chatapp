@@ -1,42 +1,36 @@
+// upload.js
 import multer from "multer";
+import s3 from "./cloud.config.js";
 import path from "path";
-import fs from "fs";
-import { fileURLToPath } from "url";
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
-const pathname = path.join(__dirname, "uploads/");
-
-if (!fs.existsSync(pathname)) {
-    fs.mkdirSync(pathname, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, pathname);
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.originalname);
-    }
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
 });
 
-const Upload = multer({ 
-    storage,
-    limits: {
-        fileSize: 5 * 1024 * 1024, // 5MB limit
-    },
-    fileFilter: (req, file, cb) => {
-        // Accept images only
-        if (!file.originalname.match(/\.(jpg|jpeg|png|gif|webp)$/)) {
-            return cb(new Error('Only image files are allowed!'), false);
-        }
-        cb(null, true);
-    }
-});
+export const uploadToS3 = (file, folder = "uploads") => {
+    return new Promise((resolve, reject) => {
+        const ext = path.extname(file.originalname);
+        const fileName = `${folder}/${Date.now()}-${Math.random()
+            .toString(36)
+            .substring(2)}${ext}`;
 
-const bucketName = "mangementbkt";
-export {
-    Upload,
-    pathname,
-    bucketName
+        const params = {
+            Bucket: process.env.S3_BUCKET,
+            Key: fileName,
+            Body: file.buffer,
+            ContentType: file.mimetype,
+            ACL: "public-read",
+        };
+
+        s3.upload(params, (err, data) => {
+            if (err) return reject(err);
+            resolve({
+                path: fileName,
+                url: data.Location,
+            });
+        });
+    });
 };
+
+export default upload;

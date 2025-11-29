@@ -2,11 +2,10 @@ import { Router } from "express";
 const router = Router();
 import vehicleVerification from "../controllers/vehicle.verification.js";
 import { addToContactChatter ,acceptRequestChatter, checkForRequestChatter, getMyContactsChatter ,checkandVerifyToken, loadMyProfile, checkUserStatus} from "../controllers/chatterbox.auth.js";
-import { Upload } from "../configs/multer.config.js";
 import { registerUser, loginUser, addToContact, addNickName, checkForRequest, acceptRequest, getMyContacts,deletUser, loadProfileDetails, forgotPassword } from "../controllers/auth.controller.js";
 import { addProfileImage, saveProduct } from "../controllers/profile.controller.js";
 import { registerGroup , getGroupsofUser  } from "../controllers/chatter.group.controller.js";
-
+import upload from "../configs/multer.config.js";
 
 router.post("/register", registerUser);
 router.post("/login", loginUser);
@@ -23,7 +22,7 @@ router.post("/addcontactchatter", addToContactChatter);
 router.put("/acceptrequestchatter", acceptRequestChatter);
 router.get("/checkrequestchatter", checkForRequestChatter);
 router.get("/mycontactschatter", getMyContactsChatter);
-router.post("/addprofile" , Upload.single("profile") , saveProduct);
+router.post("/addprofile" , upload.single("profile") , addProfileImage);
 router.post("/registergroup", registerGroup);
 router.get("/usergroups", getGroupsofUser);
 router.get("/checktoken", checkandVerifyToken);

@@ -1,43 +1,52 @@
-import { bucketName } from "../configs/multer.config.js";
-import storage from "../configs/cloud.config.js";
+import upload , {uploadToS3} from "../configs/multer.config.js";
 import { PrismaClient } from "@prisma/client";
-import { pathname } from "../configs/multer.config.js";
 const prisma = new PrismaClient();
 import files from "fs";
 import path from "path";
-async function addProfileImage(req, res) {
-    if (!req.user) {
-        return res.status(401).json({ verified: false, message: "Unauthorized request" });
+
+const addProfileImage = async (req, res) => {
+    try {
+        if (!req.user) {
+            console.log("Unauthorized request");
+            return res.status(401).json({
+                verified: false,
+                message: "Unauthorized request"
+            });
+        }
+
+        if (!req.file) {
+            return res.status(400).json({
+                error: "No profile image uploaded"
+            });
+        }
+
+   
+        const uploaded = await uploadToS3(req.file);
+
+
+        const updatedUser = await prisma.user.update({
+            where: { id: req.user.id },
+            data: { profileImage: uploaded.url }, // SAVE URL!!!
+        });
+
+        console.log("Profile image updated successfully");
+
+        return res.status(200).json({
+            message: "Profile image updated successfully",
+            profileImage: uploaded.url,
+            user: updatedUser
+        });
+
+    } catch (error) {
+        console.error("Error uploading profile image:", error);
+        return res.status(500).json({
+            error: "Something went wrong",
+            details: error.message
+        });
     }
+};
 
-    const userId = req.user.id;
-    if (!req.file) {
-        return res.status(400).json({ message: "No file uploaded" });
-    }
 
-    const bucket = storage.bucket(bucketName);
-
-    // Direct upload from buffer, no local file
-    const blob = bucket.file(req.file.originalname);
-    const blobStream = blob.createWriteStream({
-        resumable: false,
-        contentType: req.file.mimetype,
-    });
-
-    blobStream.on('error', err => {
-        console.error("Upload error:", err);
-        return res.status(500).json({ message: "Upload failed", error: err });
-    });
-
-    blobStream.on('finish', async () => {
-        const fileUrl = `https://storage.googleapis.com/${bucketName}/${encodeURIComponent(req.file.originalname)}`;
-        await prisma.user.update({ where: { id: userId }, data: { profileImage: fileUrl } });
-        return res.status(201).json({ message: "Profile Photo Added", profilePhoto: fileUrl });
-    });
-
-    blobStream.end(req.file.buffer);
-}
-;
 
 const saveProduct = async (req, res) => {
     try {
@@ -106,4 +115,4 @@ const saveProduct = async (req, res) => {
     }
 
 };
-export { addProfileImage, saveProduct };
+export {  saveProduct,addProfileImage };
