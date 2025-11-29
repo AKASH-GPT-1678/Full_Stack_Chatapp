@@ -6,9 +6,6 @@ import { io } from 'socket.io-client';
 import useIdStore from '../zustand';
 import axios from 'axios';
 import Avatar from "../assets/image.png";
-import { saveMessage } from './chatDb';
-import { getMessagesByReceiverId } from './chatDb';
-import { fa, ms } from 'zod/v4/locales';
 
 import EmptyChat from './EmpyChat';
 import { initDB, saveChatMessage, getMessagesByContactId, storeMessage } from './messageDB';
@@ -194,9 +191,9 @@ const UserChats = ({ username, chatId, type }) => {
         <>
             {
                 !finalChatId ? <EmptyChat /> :
-                    <div className=' flex-col w-full  md:flex h-screen mb-5 rounded-2xl' style={{ backgroundImage: "url('https://res.cloudinary.com/dffepahvl/image/upload/v1754586400/brvblkicc5iuc7pvuwyv.avif')" }}>
+                    <div className=' flex-col w-full  md:flex h-full mb-5 rounded-2xl' style={{ backgroundImage: "url('https://res.cloudinary.com/dffepahvl/image/upload/v1754586400/brvblkicc5iuc7pvuwyv.avif')" }}>
                         <div className='flex flex-col h-full'>
-                            <div className='min-h-[70px] w-full bg-white rounded-t-2xl flex-shrink-0'>
+                            <div className='min-h-[70px] w-full bg-white rounded-t-2xl shrink-0'>
                                 <div className='p-3 flex flex-row'>
                                     <img src={Avatar} alt="profileimage" className='h-[70px] w-[70px] rounded-full' />
                                     <div className='flex flex-col self-center'>
@@ -235,7 +232,7 @@ const UserChats = ({ username, chatId, type }) => {
                                 }
                             </div>
 
-                            <div className='bg-white flex flex-row items-center px-5 py-2 flex-shrink-0 rounded-b-2xl '>
+                            <div className='bg-white flex flex-row fixed bottom-5 w-100 items-center px-5 py-2  rounded-b-2xl '>
                                 <input
                                     type='text'
                                     placeholder='Send your Message'

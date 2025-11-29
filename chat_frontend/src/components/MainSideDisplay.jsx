@@ -369,12 +369,12 @@ const MainSideDisplay = () => {
                     </div>
 
                     <div>
-                        <input type="text" className='w-full p-3 border-1 border-gray-400 mt-4  rounded-2xl' placeholder='Search' />
+                        <input type="text" className='w-full p-3 border border-gray-400 mt-4  rounded-2xl' placeholder='Search' />
                     </div>
 
                     <div className='flex-col items-center justify-center hidden bg-white mt-8 transform duration-300  p-3 rounded-2xl' ref={DivRef}>
                         <p className='font-bold text-2xl'>Search for User</p>
-                        <input type="text" className='w-full p-3 border-1 border-gray-400 mt-2  ' placeholder='add username to search' onChange={(e) => setAddChat(e.target.value)} />
+                        <input type="text" className='w-full p-3 border border-gray-400 mt-2  ' placeholder='add username to search' onChange={(e) => setAddChat(e.target.value)} />
                         <button className={`p-2 w-full bg-blue-500 text-white mt-2 cursor-pointer `} onClick={addNewUser} id='addUser'>New Chat</button>
                     </div>
 
@@ -397,7 +397,7 @@ const MainSideDisplay = () => {
                                                 {contact.username}
                                             </p>
 
-                                            {newGroup ? <input type='checkbox' className='flex flex-col accent-green-600  cursor-pointer self-center-safe p-2 h-[20px] w-[40px]' onChange={(e) => handleCheckboxChange(e, contact.id)} /> : <p className='font-semibold text-gray-400'>09:25 PM</p>}
+                                            {newGroup ? <input type='checkbox' className='flex flex-col accent-green-600  cursor-pointer self-center-safe p-2 h-6 w-12' onChange={(e) => handleCheckboxChange(e, contact.id)} /> : <p className='font-semibold text-gray-400'>09:25 PM</p>}
                                         </div>
                                         <p className='mt-2'>
                                             Hey how are you doing
@@ -417,7 +417,7 @@ const MainSideDisplay = () => {
                                                 {contact.groupName}
                                             </p>
 
-                                            {newGroup ? <input type='checkbox' className='flex flex-col accent-green-600  cursor-pointer self-center-safe p-2 h-[20px] w-[40px]' onChange={(e) => handleCheckboxChange(e, contact.id)} /> : <p className='font-semibold text-gray-400'>09:25 PM</p>}
+                                            {newGroup ? <input type='checkbox' className='flex flex-col accent-green-600  cursor-pointer self-center-safe p-2 h-6 w-12' onChange={(e) => handleCheckboxChange(e, contact.id)} /> : <p className='font-semibold text-gray-400'>09:25 PM</p>}
                                         </div>
                                         <p className='mt-2'>
                                             Hey how are you doing

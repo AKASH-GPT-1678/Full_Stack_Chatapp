@@ -1,8 +1,5 @@
-import { useId, useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+
 import './App.css'
-import ChatPage from './components/ChatPage';
 import useIdStore from './zustand';
 import { Link, Router, Route, Routes } from 'react-router-dom';
 import MainSideDisplay from './components/MainSideDisplay';
