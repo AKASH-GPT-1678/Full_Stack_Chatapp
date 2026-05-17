@@ -188,64 +188,128 @@ const UserChats = ({ username, chatId, type }) => {
     }, [finalChatId]);
 
     return (
-        <>
-            {
-                !finalChatId ? <EmptyChat /> :
-                    <div className=' flex-col w-full  md:flex h-full mb-5 rounded-2xl' style={{ backgroundImage: "url('https://res.cloudinary.com/dffepahvl/image/upload/v1754586400/brvblkicc5iuc7pvuwyv.avif')" }}>
-                        <div className='flex flex-col h-full'>
-                            <div className='min-h-[70px] w-full bg-white rounded-t-2xl shrink-0'>
-                                <div className='p-3 flex flex-row'>
-                                    <img src={Avatar} alt="profileimage" className='h-[70px] w-[70px] rounded-full' />
-                                    <div className='flex flex-col self-center'>
-                                        <p className='font-semibold text-2xl'>{username ?? "ak"}</p>
-                                        <p className={`text-sm ${currentChatStaus ? "text-green-500" : "text-red-500"}`}>{currentChatStaus ? "Online" : "Offline"}</p>
-                                    </div>
-                                </div>
-                            </div>
+<>
+  {!finalChatId ? (
+    <EmptyChat />
+  ) : (
+    <div
+      className="flex h-screen w-full flex-col overflow-hidden rounded-2xl bg-cover bg-center"
+      style={{
+        backgroundImage:
+          "url('https://res.cloudinary.com/dffepahvl/image/upload/v1754586400/brvblkicc5iuc7pvuwyv.avif')",
+      }}
+    >
+      {/* HEADER */}
+      <div className="flex items-center gap-4 border-b bg-white/90 px-5 py-4 backdrop-blur-md">
+        <img
+          src={Avatar}
+          alt="profile"
+          className="h-14 w-14 rounded-full object-cover"
+        />
 
-                            <div className='flex-1 overflow-y-auto px-2 py-2' style={{ maxHeight: 'calc(100vh - 140px)' }}>
-                                {oldChats &&
-                                    oldChats.map((item, index) => (
-                                        <div key={index} className={`flex flex-row w-fit p-4 rounded-2xl shadow-xl bg-white gap-2 mb-2 ${item.senderId === userId.trim() ? "justify-end ml-auto" : ""}`}>
-                                            <div className='bg-white'>
-                                                {item.senderId === userId.trim() ? <></> : <img src={Avatar} alt="profileimage" className='h-[50px] w-[50px] rounded-full bg-white' />}
-                                            </div>
-                                            <div className='self-start bg-white'>
-                                                <p className='font-semibold'>{item.senderId === userId.trim() ? "You" : username}</p>
-                                                <p className='max-w-[1000px]'>{item.content}</p>
-                                            </div>
-                                        </div>
-                                    ))
-                                }
-                                {
-                                    filteredChats.map((item, index) => (
-                                        <div key={index} className={`flex flex-row w-fit p-4 rounded-2xl shadow-xl bg-white gap-2 mb-2 ${item.senderId === userId.trim() ? "justify-end ml-auto" : ""}`}>
-                                            <div className='bg-white'>
-                                                {item.senderId === userId.trim() ? <></> : <img src={Avatar} alt="profileimage" className='h-[50px] w-[50px] rounded-full bg-white' />}
-                                            </div>
-                                            <div className='self-start bg-white'>
-                                                <p className='font-semibold'>{item.senderId === userId.trim() ? "You" : username}</p>
-                                                <p className='max-w-[1000px]'>{item.content}</p>
-                                            </div>
-                                        </div>
-                                    ))
-                                }
-                            </div>
+        <div>
+          <p className="text-xl font-semibold">
+            {username ?? "Akash"}
+          </p>
 
-                            <div className='bg-white flex flex-row fixed bottom-5 w-100 items-center px-5 py-2  rounded-b-2xl '>
-                                <input
-                                    type='text'
-                                    placeholder='Send your Message'
-                                    className='p-3 w-[90%] bg-violet-50 md:min-h-[50px] rounded-lg'
-                                    onChange={(e) => setMessage(e.target.value)}
-                                    ref={inputRef}
-                                />
-                                <FiSend size={50} className='ml-5  cursor-pointer p-1 rounded' onClick={sendMessage} />
-                            </div>
-                        </div>
-                    </div>
-            }
-        </>
+          <p
+            className={`text-sm font-medium ${
+              currentChatStaus
+                ? "text-green-500"
+                : "text-red-500"
+            }`}
+          >
+            {currentChatStaus ? "Online" : "Offline"}
+          </p>
+        </div>
+      </div>
+
+      {/* CHAT BODY */}
+      <div className="flex-1 overflow-y-auto px-4 py-5">
+        {/* OLD CHATS */}
+        {oldChats &&
+          oldChats.map((item, index) => (
+            <div
+              key={index}
+              className={`mb-4 flex ${
+                item.senderId === userId.trim()
+                  ? "justify-end"
+                  : "justify-start"
+              }`}
+            >
+              <div
+                className={`max-w-[80%] rounded-2xl px-4 py-3 shadow-lg ${
+                  item.senderId === userId.trim()
+                    ? "bg-blue-500 text-white"
+                    : "bg-white"
+                }`}
+              >
+                <p className="text-sm font-semibold mb-1">
+                  {item.senderId === userId.trim()
+                    ? "You"
+                    : username}
+                </p>
+
+                <p className="break-words">
+                  {item.content}
+                </p>
+              </div>
+            </div>
+          ))}
+
+        {/* LIVE CHATS */}
+        {filteredChats.map((item, index) => (
+          <div
+            key={index}
+            className={`mb-4 flex ${
+              item.senderId === userId.trim()
+                ? "justify-end"
+                : "justify-start"
+            }`}
+          >
+            <div
+              className={`max-w-[80%] rounded-2xl px-4 py-3 shadow-lg ${
+                item.senderId === userId.trim()
+                  ? "bg-blue-500 text-white"
+                  : "bg-white"
+              }`}
+            >
+              <p className="text-sm font-semibold mb-1">
+                {item.senderId === userId.trim()
+                  ? "You"
+                  : username}
+              </p>
+
+              <p className="break-words">
+                {item.content}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* MESSAGE INPUT */}
+      <div className="border-t bg-white/90 px-4 py-3 backdrop-blur-md">
+        <div className="flex items-center gap-3">
+          <input
+            type="text"
+            placeholder="Type a message..."
+            className="flex-1 rounded-xl border border-gray-300 bg-gray-100 p-4 outline-none focus:border-blue-500"
+            onChange={(e) => setMessage(e.target.value)}
+            ref={inputRef}
+          />
+
+          <button
+            onClick={sendMessage}
+            className="rounded-xl bg-blue-500 p-3 text-white transition hover:bg-blue-600"
+          >
+            <FiSend size={24} />
+          </button>
+        </div>
+      </div>
+    </div>
+  )}
+</>
     );
 };
 
