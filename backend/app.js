@@ -7,6 +7,7 @@ import { Server } from "socket.io";
 import http from "http";
 import redisClient from './configs/rediClient.js';
 import router from './routes/router.js';
+import rateLimiter from "express-rate-limit";
 // import "./configs/mongClient.js";  // Remove this for now if causing issues
 import { checkPendingMessagesPG, saveMessagePG, updateStatusPG } from './controllers/message.controller.js';
 import { getMembersIds } from './controllers/chatter.group.controller.js';
@@ -39,8 +40,15 @@ app.use(cors({
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE"]
 }));
+const limiter = rateLimiter({
+    max: 200,
+    windowMs: 60 * 60 * 1000,
+    message: "Too many request from this IP"
+});
 
+app.use(limiter);
 app.use(express.json());
+app.use(rateLimiter)
 
 app.use("/api/auth", router);
 app.use(decodeToken);
